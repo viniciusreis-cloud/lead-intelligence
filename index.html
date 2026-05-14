@@ -166,6 +166,45 @@
   .eng-bar{height:100%;border-radius:3px;}
   .eng-value{font-size:12px;font-weight:600;width:32px;text-align:right;flex-shrink:0;}
 
+
+  /* ARISTO FUNNEL */
+  .aristo-funnel{padding:16px 20px 20px;}
+  .aristo-pipeline-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;font-weight:600;}
+  .aristo-pipeline-divider{text-align:center;padding:10px 0;font-size:11px;color:var(--muted);border-top:1px dashed var(--border);border-bottom:1px dashed var(--border);margin:14px 0;}
+  .aristo-stages{display:flex;flex-direction:column;gap:0;}
+  .aristo-stage{position:relative;cursor:pointer;}
+  .aristo-stage-top{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);transition:all .15s;margin-bottom:2px;}
+  .aristo-stage.done .aristo-stage-top{background:rgba(124,106,247,.08);border-color:rgba(124,106,247,.25);}
+  .aristo-stage.current .aristo-stage-top{background:rgba(92,240,160,.08);border-color:rgba(92,240,160,.35);box-shadow:0 0 12px rgba(92,240,160,.08);}
+  .aristo-stage.pending .aristo-stage-top{opacity:.5;}
+  .aristo-stage-top:hover{border-color:rgba(255,255,255,.15);}
+  .aristo-stage-icon{font-size:14px;flex-shrink:0;}
+  .aristo-stage-label{font-size:13px;font-weight:500;flex:1;}
+  .aristo-stage.done .aristo-stage-label{color:var(--accent);}
+  .aristo-stage.current .aristo-stage-label{color:var(--success);}
+  .aristo-current-dot{width:7px;height:7px;border-radius:50%;background:var(--success);box-shadow:0 0 6px var(--success);flex-shrink:0;}
+  .aristo-expand-hint{color:var(--muted);font-size:12px;transition:transform .2s;}
+  .aristo-connector{width:1px;height:6px;background:var(--border);margin:0 0 2px 20px;}
+  .aristo-detail{display:none;background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:4px;display:none;}
+  .aristo-detail.open{display:block;}
+  .aristo-detail-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:4px 0;border-bottom:1px solid var(--border);}
+  .aristo-detail-row:last-child{border-bottom:none;}
+  .aristo-detail-label{font-size:11px;color:var(--muted);flex-shrink:0;}
+  .aristo-detail-value{font-size:12px;font-weight:500;text-align:right;word-break:break-word;}
+
+  /* MEETINGS */
+  .meetings-list{padding:8px 0;}
+  .meeting-item{display:flex;gap:12px;padding:12px 20px;transition:background .15s;border-bottom:1px solid var(--border);}
+  .meeting-item:last-child{border-bottom:none;}
+  .meeting-item:hover{background:rgba(255,255,255,.02);}
+  .meeting-icon{font-size:20px;flex-shrink:0;padding-top:2px;}
+  .meeting-content{flex:1;}
+  .meeting-top{display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;}
+  .meeting-title{font-size:13px;font-weight:500;}
+  .meeting-outcome{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid;text-transform:uppercase;letter-spacing:.4px;}
+  .meeting-meta{display:flex;gap:14px;flex-wrap:wrap;}
+  .meeting-meta span{font-size:11px;color:var(--muted);}
+
   /* ZENVIA */
   .zv-tabs{padding:10px 20px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--border);}
   .zv-tab{padding:5px 12px;border-radius:7px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;}
@@ -379,25 +418,27 @@ async function loadContact(input){
     const rotuloProps=Object.values(ROTULO_PROPS).join(',');
     const PROPS=['firstname','lastname','email','phone','mobilephone','lifecyclestage','hs_lead_status','hs_predictivescoringtier','hs_predictivecontactscore_v2','hs_latest_source','hs_latest_source_data_1','hs_email_open','hs_email_click','hs_email_bounce','hs_sales_email_last_opened','hs_sales_email_last_clicked','hs_sales_email_last_replied','notes_last_updated','num_associated_deals','hs_analytics_num_visits','hs_analytics_num_page_views','grupo_primum','produtos_primum','historico_cursos_interesse','nome_do_ultimo_formulario','perfil_medico','createdate','lastmodifieddate','hs_v2_date_entered_lead','hs_v2_date_entered_marketingqualifiedlead','hs_v2_date_entered_salesqualifiedlead','hs_v2_date_entered_opportunity','hs_v2_date_entered_customer'].join(',');
 
-    const [contact,actIds,leadIds,dealIds]=await Promise.all([
+    const [contact,actIds,leadIds,dealIds,meetingIds]=await Promise.all([
       hs(`/crm/v3/objects/contacts/${contactId}?properties=${PROPS},${rotuloProps}`),
       getAssocIds(contactId,'activities'),
       getAssocIds(contactId,'leads'),
       getAssocIds(contactId,'deals'),
+      getAssocIds(contactId,'meetings'),
     ]);
 
-    const [activities,leads,deals]=await Promise.all([
+    const [activities,leads,deals,meetings]=await Promise.all([
       actIds.length?hsPost('/crm/v3/objects/activities/batch/read',{properties:['hs_activity_type','hs_body_preview','hs_timestamp','hs_title','hs_note_body','hs_email_subject'],inputs:actIds.slice(0,60).map(id=>({id}))}).then(d=>(d.results||[]).sort((a,b)=>(b.properties?.hs_timestamp||'').localeCompare(a.properties?.hs_timestamp||''))):Promise.resolve([]),
-      leadIds.length?hsPost('/crm/v3/objects/leads/batch/read',{properties:['hs_lead_name','hs_pipeline','createdate'],inputs:leadIds.slice(0,20).map(id=>({id}))}).then(d=>d.results||[]):Promise.resolve([]),
-      dealIds.length?hsPost('/crm/v3/objects/deals/batch/read',{properties:['dealname','pipeline','dealstage','amount','createdate','zenvia___registro_de_conversa'],inputs:dealIds.slice(0,20).map(id=>({id}))}).then(d=>d.results||[]):Promise.resolve([]),
+      leadIds.length?hsPost('/crm/v3/objects/leads/batch/read',{properties:['hs_lead_name','hs_pipeline','hs_pipeline_stage','createdate','quantidade_de_followup','ano_que_vai_prestar_a_prova','em_que_ano_voce_se_forma','instituicao_de_ensino_superior','prova_pretendida','aristo_produto_pretendido','temperatura_do_lead'],inputs:leadIds.slice(0,20).map(id=>({id}))}).then(d=>d.results||[]):Promise.resolve([]),
+      dealIds.length?hsPost('/crm/v3/objects/deals/batch/read',{properties:['dealname','pipeline','dealstage','amount','createdate','zenvia___registro_de_conversa','renovacao','status_da_reuniao','status_do_negocio','nivel_de_urgencia','bant_autoridade','bant__necessidade','link_de_pagamento_enviado','motivo_do_noshow','retornar_para_sdr'],inputs:dealIds.slice(0,20).map(id=>({id}))}).then(d=>d.results||[]):Promise.resolve([]),
+      meetingIds.length?hsPost('/crm/v3/objects/meetings/batch/read',{properties:['hubspot_owner_id','hs_timestamp','hs_meeting_start_time','hs_createdate','hs_meeting_title','hs_meeting_outcome'],inputs:meetingIds.slice(0,20).map(id=>({id}))}).then(d=>(d.results||[]).sort((a,b)=>(b.properties?.hs_meeting_start_time||'').localeCompare(a.properties?.hs_meeting_start_time||''))):Promise.resolve([]),
     ]);
 
-    render(contact,activities,leads,deals);
+    render(contact,activities,leads,deals,meetings);
   }catch(err){showToast(err.message);showEmpty();}
 }
 
 // RENDER
-function render(contact,activities,leads,deals){
+function render(contact,activities,leads,deals,meetings){
   const p=contact.properties||{};
   const name=[p.firstname,p.lastname].filter(Boolean).join(' ')||'Sem nome';
   const score=Math.round(parseFloat(p.hs_predictivecontactscore_v2||0)*100);
@@ -468,10 +509,14 @@ function render(contact,activities,leads,deals){
       </div>
     </div>`;
 
+  // Detect Aristo
+  const isAristo=isAristoBrand(p,leads,deals);
+
   // RIGHT
   const right=document.getElementById('rightCol');
   right.innerHTML=
-    buildFunnel(p)+
+    (isAristo?buildAristoFunnel(leads,deals):buildFunnel(p))+
+    (meetings.length?buildMeetings(meetings):'')+
     buildCourses(p,leads,activities)+
     buildTimeline(activities)+
     (deals.length?buildDeals(deals):'')+
@@ -479,11 +524,19 @@ function render(contact,activities,leads,deals){
     buildEngagement(p);
 }
 
+function isAristoBrand(p,leads,deals){
+  const grupo=(p.grupo_primum||'').toUpperCase();
+  if(grupo.includes('ARISTO'))return true;
+  if(leads.some(l=>(l.properties?.hs_pipeline||'').toLowerCase().includes('aristo')))return true;
+  if(deals.some(d=>(d.properties?.pipeline||'').toLowerCase().includes('aristo')))return true;
+  return false;
+}
+
 function propRow(label,value,small=false){
   return`<div class="prop-row"><span class="prop-label">${label}</span><span class="prop-value"${small?' style="font-size:11px"':''}>${fmt(value)}</span></div>`;
 }
 
-// FUNIL
+// FUNIL GENÉRICO
 function buildFunnel(p){
   const current=p.lifecyclestage||'';
   const currentIdx=LIFECYCLE_ORDER.findIndex(s=>s.key===current);
@@ -506,6 +559,182 @@ function buildFunnel(p){
       <div class="section-title">Jornada do Lead</div>
     </div>
     <div class="funnel-wrap"><div class="funnel-stages">${stages}</div></div>
+  </div>`;
+}
+
+// FUNIL ARISTO
+const ARISTO_SDR_STAGES=[
+  {key:'prospeccao',   label:'Prospecção',        icon:'📋', pipeline:'sdr'},
+  {key:'abordagem',    label:'Abordagem',          icon:'📞', pipeline:'sdr'},
+  {key:'qualificacao', label:'Qualificação',       icon:'🔍', pipeline:'sdr'},
+  {key:'reuniao_agendada',label:'Reunião Agendada',icon:'📅', pipeline:'sdr'},
+];
+const ARISTO_CLOSER_STAGES=[
+  {key:'sessao_estrategica', label:'Sessão Estratégica', icon:'🎯', pipeline:'closer'},
+  {key:'pos_sessao',         label:'Pós-Sessão',         icon:'💡', pipeline:'closer'},
+  {key:'venda_matricula',    label:'Venda/Matrícula',     icon:'✅', pipeline:'closer'},
+  {key:'perdido',            label:'Perdido',             icon:'❌', pipeline:'closer'},
+];
+
+function normalizeStage(s){
+  if(!s)return'';
+  return s.toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g,'')
+    .replace(/[\s_-]+/g,'_')
+    .replace(/[^a-z0-9_]/g,'');
+}
+
+function stageClass(stageKey, currentKey, allKeys){
+  const ci=allKeys.indexOf(currentKey);
+  const si=allKeys.indexOf(stageKey);
+  if(ci<0)return'pending';
+  if(si<ci)return'done';
+  if(si===ci)return'current';
+  return'pending';
+}
+
+function buildAristoFunnel(leads,deals){
+  // Pega lead SDR Aristo mais recente
+  const sdrLead=leads.filter(l=>(l.properties?.hs_pipeline||'').toLowerCase().includes('aristo')).sort((a,b)=>(b.properties?.createdate||'').localeCompare(a.properties?.createdate||''))[0];
+  const sdrStageRaw=normalizeStage(sdrLead?.properties?.hs_pipeline_stage||'');
+
+  // Pega negócio Aristo Closers mais recente
+  const closerDeal=deals.filter(d=>(d.properties?.pipeline||'').toLowerCase().includes('aristo')).sort((a,b)=>(b.properties?.createdate||'').localeCompare(a.properties?.createdate||''))[0];
+  const closerStageRaw=normalizeStage(closerDeal?.properties?.dealstage||'');
+
+  const sdrKeys=ARISTO_SDR_STAGES.map(s=>s.key);
+  const closerKeys=ARISTO_CLOSER_STAGES.map(s=>s.key);
+
+  // Match stage key
+  function matchKey(raw, keys){
+    if(!raw)return null;
+    return keys.find(k=>raw.includes(k)||k.includes(raw))||null;
+  }
+  const sdrCurrent=matchKey(sdrStageRaw,sdrKeys);
+  const closerCurrent=matchKey(closerStageRaw,closerKeys);
+
+  // Lead props for details
+  const lp=sdrLead?.properties||{};
+  const dp=closerDeal?.properties||{};
+
+  function stageDetail(key){
+    if(key==='abordagem'){
+      return detailRow('Follow-ups',lp.quantidade_de_followup);
+    }
+    if(key==='qualificacao'){
+      return[
+        detailRow('Ano da prova',lp.ano_que_vai_prestar_a_prova),
+        detailRow('Formação em',lp.em_que_ano_voce_se_forma),
+        detailRow('Instituição',lp.instituicao_de_ensino_superior),
+        detailRow('Prova pretendida',lp.prova_pretendida),
+        detailRow('Produto pretendido',lp.aristo_produto_pretendido),
+        detailRow('Temperatura',lp.temperatura_do_lead),
+      ].join('');
+    }
+    if(key==='pos_sessao'){
+      const status=dp.status_da_reuniao||'';
+      const base=[
+        detailRow('Renovação',dp.renovacao),
+        detailRow('Status da reunião',dp.status_da_reuniao),
+      ].join('');
+      const realizada=status.toLowerCase().includes('realiza')?[
+        detailRow('Status do negócio',dp.status_do_negocio),
+        detailRow('Nível de urgência',dp.nivel_de_urgencia),
+        detailRow('Fala com decisor?',dp.bant_autoridade),
+        detailRow('Deadline',dp.bant__necessidade),
+        dp.link_de_pagamento_enviado?`<div class="aristo-detail-row"><span class="aristo-detail-label">Link de pagamento</span><a href="${dp.link_de_pagamento_enviado}" target="_blank" style="color:var(--accent);font-size:12px">Abrir ↗</a></div>`:'',
+      ].join(''):'';
+      const noshow=status.toLowerCase().includes('n')&&status.toLowerCase().includes('comparec')?[
+        detailRow('Motivo no-show',dp.motivo_do_noshow),
+        detailRow('Retornar ao SDR',dp.retornar_para_sdr),
+      ].join(''):'';
+      return base+realizada+noshow;
+    }
+    return'';
+  }
+
+  function buildPipelineStages(stages,currentKey,allKeys,detailFn){
+    return stages.map((s,i)=>{
+      const cls=stageClass(s.key,currentKey,allKeys);
+      const detail=detailFn(s.key);
+      const eid=`aristo_${s.key}`;
+      return`<div class="aristo-stage ${cls}" onclick="toggleAristoDetail('${eid}')">
+        <div class="aristo-stage-top">
+          <span class="aristo-stage-icon">${s.icon}</span>
+          <span class="aristo-stage-label">${s.label}</span>
+          ${cls==='current'?'<span class="aristo-current-dot"></span>':''}
+          ${detail?'<span class="aristo-expand-hint">›</span>':''}
+        </div>
+        ${detail?`<div class="aristo-detail" id="${eid}">${detail}</div>`:''}
+        ${i<stages.length-1?'<div class="aristo-connector"></div>':''}
+      </div>`;
+    }).join('');
+  }
+
+  const sdrHtml=buildPipelineStages(ARISTO_SDR_STAGES,sdrCurrent,sdrKeys,stageDetail);
+  const closerHtml=buildPipelineStages(ARISTO_CLOSER_STAGES,closerCurrent,closerKeys,stageDetail);
+
+  return`<div class="section-card">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(247,201,72,.12)">🎓</div>
+      <div class="section-title">Jornada Aristo</div>
+    </div>
+    <div class="aristo-funnel">
+      <div class="aristo-pipeline-label">SDR Pipeline</div>
+      <div class="aristo-stages">${sdrHtml}</div>
+      <div class="aristo-pipeline-divider">
+        <span>↓ Reunião agendada → Closers</span>
+      </div>
+      <div class="aristo-pipeline-label">Closers Pipeline</div>
+      <div class="aristo-stages">${closerHtml}</div>
+    </div>
+  </div>`;
+}
+
+function detailRow(label,value){
+  if(!value&&value!==0)return'';
+  return`<div class="aristo-detail-row"><span class="aristo-detail-label">${label}</span><span class="aristo-detail-value">${value}</span></div>`;
+}
+
+function toggleAristoDetail(id){
+  const el=document.getElementById(id);
+  if(el)el.classList.toggle('open');
+}
+
+// REUNIÕES
+function buildMeetings(meetings){
+  if(!meetings.length)return'';
+  const items=meetings.map(m=>{
+    const mp=m.properties||{};
+    const scheduled=fmtDate(mp.hs_createdate);
+    const meetDate=fmtDate(mp.hs_meeting_start_time||mp.hs_timestamp);
+    const meetTime=mp.hs_meeting_start_time?new Date(mp.hs_meeting_start_time).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'';
+    const outcome=mp.hs_meeting_outcome||'';
+    const outColor=outcome.toLowerCase().includes('complet')||outcome.toLowerCase().includes('realiz')?'var(--success)':outcome.toLowerCase().includes('cancel')||outcome.toLowerCase().includes('no_show')?'var(--danger)':'var(--accent3)';
+    const title=mp.hs_meeting_title||'Reunião';
+    return`<div class="meeting-item">
+      <div class="meeting-icon">📅</div>
+      <div class="meeting-content">
+        <div class="meeting-top">
+          <div class="meeting-title">${title}</div>
+          ${outcome?`<span class="meeting-outcome" style="color:${outColor};border-color:${outColor}33;background:${outColor}11">${outcome}</span>`:''}
+        </div>
+        <div class="meeting-meta">
+          <span>📆 Agendada em ${scheduled}</span>
+          <span>🕐 ${meetDate}${meetTime?' às '+meetTime:''}</span>
+          <span>👤 Mayara</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  return`<div class="section-card">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(124,106,247,.12)">📅</div>
+      <div class="section-title">Reuniões</div>
+      <div class="section-count">${meetings.length}</div>
+    </div>
+    <div class="meetings-list">${items}</div>
   </div>`;
 }
 
