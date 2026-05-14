@@ -453,6 +453,12 @@ function render(contact,activities,leads,deals,meetings){
   const scoreColor=score>60?'var(--success)':score>30?'var(--accent3)':'var(--accent)';
   const circ=2*Math.PI*28;
 
+  // Detect Aristo — must be before left card HTML
+  const isAristo=isAristoBrand(p,leads,deals);
+  const {sdrLead:_sdrL,closerDeal:_closerD}=isAristo?getAristoSidebarProps(leads,deals):{sdrLead:null,closerDeal:null};
+  const lp_side=_sdrL?.properties||{};
+  const dp_side=_closerD?.properties||{};
+
   // Brands
   const brandSet=new Set();
   if(p.grupo_primum)p.grupo_primum.split(';').forEach(b=>brandSet.add(b.trim().toUpperCase()));
@@ -541,11 +547,7 @@ function render(contact,activities,leads,deals,meetings){
       </div>
     </div>`;
 
-  // Detect Aristo
-  const isAristo=isAristoBrand(p,leads,deals);
-  const {sdrLead:_sdrL,closerDeal:_closerD}=isAristo?getAristoSidebarProps(leads,deals):{sdrLead:null,closerDeal:null};
-  const lp_side=_sdrL?.properties||{};
-  const dp_side=_closerD?.properties||{};
+  // Detect Aristo (already declared above)
 
   // RIGHT
   const right=document.getElementById('rightCol');
