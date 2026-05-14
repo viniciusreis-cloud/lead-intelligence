@@ -199,8 +199,8 @@
   .aristo-detail-label{font-size:11px;color:var(--muted);flex-shrink:0;}
   .aristo-detail-value{font-size:12px;font-weight:500;text-align:right;word-break:break-word;}
 
-  /* STAGE HERO — indicador de etapa atual no card esquerdo */
-  .stage-hero{margin:12px 20px;border-radius:10px;overflow:hidden;border:1.5px solid rgba(247,201,72,.3);background:rgba(247,201,72,.07);}
+  /* STAGE HERO */
+  .stage-hero{margin:12px 20px 0;border-radius:10px;overflow:hidden;border:1.5px solid rgba(247,201,72,.3);background:rgba(247,201,72,.07);}
   .stage-hero.lost{border-color:rgba(247,106,106,.35);background:rgba(247,106,106,.07);}
   .stage-hero.won{border-color:rgba(92,240,160,.35);background:rgba(92,240,160,.07);}
   .sh-top{padding:7px 12px 2px;display:flex;align-items:center;gap:6px;}
@@ -217,15 +217,13 @@
   .stage-hero.won  .sh-name{color:var(--success);}
   .sh-time{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px;}
   .sh-time::before{content:'⏱';font-size:10px;}
-
-  /* current dot inside pipeline stages */
+  /* current dot inside pipeline */
   .aristo-current-dot{width:7px;height:7px;border-radius:50%;background:var(--success);box-shadow:0 0 6px var(--success);animation:shglow2 2s infinite;flex-shrink:0;}
   @keyframes shglow2{0%,100%{box-shadow:0 0 4px var(--success)}50%{box-shadow:0 0 10px var(--success),0 0 20px rgba(92,240,160,.2)}}
-
   /* time badge inside pipeline stage */
   .aristo-stage-time-badge{font-size:9px;color:var(--muted);margin-left:auto;font-family:'DM Mono',monospace;flex-shrink:0;}
-  .aristo-stage.done   .aristo-stage-time-badge{color:rgba(124,106,247,.7);}
-  .aristo-stage.current .aristo-stage-time-badge{color:rgba(247,201,72,.8);}
+  .aristo-stage.done    .aristo-stage-time-badge{color:rgba(124,106,247,.75);}
+  .aristo-stage.current .aristo-stage-time-badge{color:rgba(247,201,72,.85);}
 
   /* MEETINGS */
   .meetings-list{padding:8px 0;}
@@ -528,20 +526,19 @@ function render(contact,activities,leads,deals,meetings){
           <div class="score-sub">próximos 90 dias</div>
         </div>
       </div>
+      ${rotulosHtml?`<div class="rotulo-section"><div class="rotulo-title">Rótulo por marca</div><div class="rotulo-list">${rotulosHtml}</div></div>`:''}
       ${(()=>{
         if(!isAristo)return'';
-        // determine current pipeline & stage
         const sdrStageId=_sdrL?.properties?.hs_pipeline_stage||null;
         const dealStageId=_closerD?.properties?.dealstage||null;
         const inClosers=!!_closerD&&!!dealStageId;
-        const ARISTO_SDR_MAP={'1087683153':'Prospecção','1087683154':'Abordagem','1087683156':'Qualificação','1269135952':'Reunião Agendada','1269320048':'Perdido'};
-        const ARISTO_DL_MAP={'1269123352':'Sessão Estratégica','1269123353':'Pós-Sessão','1269225336':'Venda/Matrícula','1269225337':'Perdido'};
-        const stageName=inClosers?(ARISTO_DL_MAP[dealStageId]||dealStageId):(ARISTO_SDR_MAP[sdrStageId]||sdrStageId||'—');
+        const SDR_NAMES={'1087683153':'Prospecção','1087683154':'Abordagem','1087683156':'Qualificação','1269135952':'Reunião Agendada','1269320048':'Perdido'};
+        const DL_NAMES={'1269123352':'Sessão Estratégica','1269123353':'Pós-Sessão','1269225336':'Venda/Matrícula','1269225337':'Perdido'};
+        const stageName=inClosers?(DL_NAMES[dealStageId]||dealStageId||'—'):(SDR_NAMES[sdrStageId]||sdrStageId||'—');
         const pipeLabel=inClosers?'Closers Pipeline':'SDR Pipeline';
         const isLost=stageName==='Perdido';
         const isWon=stageName==='Venda/Matrícula';
         const heroClass=isLost?'lost':isWon?'won':'';
-        // time in current stage
         const LEAD_TKEY={'1087683153':'hs_v2_cumulative_time_in_1087683153','1087683154':'hs_v2_cumulative_time_in_1087683154','1087683156':'hs_v2_cumulative_time_in_1087683156'};
         const DEAL_TKEY={'1269123352':'hs_v2_cumulative_time_in_1269123352','1269123353':'hs_v2_cumulative_time_in_1269123353'};
         const tProp=inClosers?DEAL_TKEY[dealStageId]:LEAD_TKEY[sdrStageId];
@@ -556,7 +553,6 @@ function render(contact,activities,leads,deals,meetings){
           </div>
         </div>`;
       })()}
-      ${rotulosHtml?`<div class="rotulo-section"><div class="rotulo-title">Rótulo por marca</div><div class="rotulo-list">${rotulosHtml}</div></div>`:''}
       <div class="props-list">
         ${propRow('Telefone',p.mobilephone||p.phone)}
         ${propRow('Perfil',p.perfil_medico)}
@@ -626,9 +622,24 @@ function isAristoBrand(p,leads,deals){
 }
 
 // Returns Aristo lead/deal props for left card injection
+const _ARISTO_SDR_IDS=['1087683153','1087683154','1087683156','1269135952','1269320048'];
+const _ARISTO_DL_IDS =['1269123352','1269123353','1269225336','1269225337'];
+
 function getAristoSidebarProps(leads,deals){
-  const sdrLead=leads.filter(l=>(l.properties?.hs_pipeline||'').toLowerCase().includes('aristo')).sort((a,b)=>(b.properties?.createdate||'').localeCompare(a.properties?.createdate||''))[0];
-  const closerDeal=deals.filter(d=>(d.properties?.pipeline||'').toLowerCase().includes('aristo')).sort((a,b)=>(b.properties?.createdate||'').localeCompare(a.properties?.createdate||''))[0];
+  const sdrLead=leads
+    .filter(l=>{
+      const lp=l.properties||{};
+      return(lp.hs_pipeline||'').toLowerCase().includes('aristo')||
+             _ARISTO_SDR_IDS.includes(lp.hs_pipeline_stage||'');
+    })
+    .sort((a,b)=>(b.properties?.createdate||'').localeCompare(a.properties?.createdate||''))[0];
+  const closerDeal=deals
+    .filter(d=>{
+      const dp=d.properties||{};
+      return(dp.pipeline||'').toLowerCase().includes('aristo')||
+             _ARISTO_DL_IDS.includes(dp.dealstage||'');
+    })
+    .sort((a,b)=>(b.properties?.createdate||'').localeCompare(a.properties?.createdate||''))[0];
   return {sdrLead, closerDeal};
 }
 
@@ -706,34 +717,52 @@ function stageClass(stageKey, currentKey, allKeys){
 }
 
 function buildAristoFunnel(leads,deals){
-  // Pega lead SDR Aristo mais recente
-  const sdrLead=leads.filter(l=>(l.properties?.hs_pipeline||'').toLowerCase().includes('aristo')).sort((a,b)=>(b.properties?.createdate||'').localeCompare(a.properties?.createdate||''))[0];
-  const sdrStageRaw=normalizeStage(sdrLead?.properties?.hs_pipeline_stage||'');
+  // Pega lead SDR Aristo mais recente (por nome do pipeline OU stage ID)
+  const sdrLead=leads
+    .filter(l=>{
+      const lp=l.properties||{};
+      return(lp.hs_pipeline||'').toLowerCase().includes('aristo')||
+             _ARISTO_SDR_IDS.includes(lp.hs_pipeline_stage||'');
+    })
+    .sort((a,b)=>(b.properties?.createdate||'').localeCompare(a.properties?.createdate||''))[0];
 
-  // Pega negócio Aristo Closers mais recente
-  const closerDeal=deals.filter(d=>(d.properties?.pipeline||'').toLowerCase().includes('aristo')).sort((a,b)=>(b.properties?.createdate||'').localeCompare(a.properties?.createdate||''))[0];
+  // Pega negócio Aristo Closers mais recente (por nome do pipeline OU stage ID)
+  const closerDeal=deals
+    .filter(d=>{
+      const dp=d.properties||{};
+      return(dp.pipeline||'').toLowerCase().includes('aristo')||
+             _ARISTO_DL_IDS.includes(dp.dealstage||'');
+    })
+    .sort((a,b)=>(b.properties?.createdate||'').localeCompare(a.properties?.createdate||''))[0];
+
+  const sdrStageRaw=normalizeStage(sdrLead?.properties?.hs_pipeline_stage||'');
   const closerStageRaw=normalizeStage(closerDeal?.properties?.dealstage||'');
 
   const sdrKeys=ARISTO_SDR_STAGES.map(s=>s.key);
   const closerKeys=ARISTO_CLOSER_STAGES.map(s=>s.key);
 
-  // Match stage key
   function matchKey(raw, keys){
     if(!raw)return null;
+    // Try direct match first (numeric IDs come back as-is)
+    if(keys.includes(raw))return raw;
+    // Then try include-based match (normalized labels)
     return keys.find(k=>raw.includes(k)||k.includes(raw))||null;
   }
-  const sdrCurrent=matchKey(sdrStageRaw,sdrKeys);
-  const closerCurrent=matchKey(closerStageRaw,closerKeys);
+  const sdrCurrent=matchKey(sdrStageRaw,sdrKeys)||matchKey(sdrLead?.properties?.hs_pipeline_stage||'',sdrKeys);
+  const closerCurrent=matchKey(closerStageRaw,closerKeys)||matchKey(closerDeal?.properties?.dealstage||'',closerKeys);
 
-  // Lead props for details
   const lp=sdrLead?.properties||{};
   const dp=closerDeal?.properties||{};
 
   function stageDetail(key){
-    if(key==='abordagem'){
+    // Map numeric IDs → property group
+    const SDR_KEY_TO_NAME={'1087683154':'abordagem','1087683156':'qualificacao'};
+    const DL_KEY_TO_NAME={'1269123353':'pos_sessao'};
+    const name=SDR_KEY_TO_NAME[key]||DL_KEY_TO_NAME[key]||normalizeStage(key);
+    if(name==='abordagem'){
       return detailRow('Follow-ups',lp.quantidade_de_followup);
     }
-    if(key==='qualificacao'){
+    if(name==='qualificacao'){
       return[
         detailRow('Ano da prova',lp.ano_que_vai_prestar_a_prova),
         detailRow('Formação em',lp.em_que_ano_voce_se_forma),
@@ -743,7 +772,7 @@ function buildAristoFunnel(leads,deals){
         detailRow('Temperatura',lp.temperatura_do_lead),
       ].join('');
     }
-    if(key==='pos_sessao'){
+    if(name==='pos_sessao'){
       const status=dp.status_da_reuniao||'';
       const base=[
         detailRow('Renovação',dp.renovacao),
@@ -771,7 +800,7 @@ function buildAristoFunnel(leads,deals){
       const detail=detailFn(s.key);
       const eid=`aristo_${s.key}`;
       const tMs=s.timeKey&&props?parseInt(props[s.timeKey]||0):0;
-      const tStr=(tMs>0)?msToReadable(tMs):null;
+      const tStr=tMs>0?msToReadable(tMs):null;
       return`<div class="aristo-stage ${cls}" onclick="toggleAristoDetail('${eid}')">
         <div class="aristo-stage-top">
           <span class="aristo-stage-icon">${s.icon}</span>
