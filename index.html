@@ -3,1253 +3,723 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Primum · Lead Viewer</title>
+<title>Primum · Lead Intelligence</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
 
 :root {
-  --bg: #0d0f14;
-  --card: #13161d;
-  --card2: #181c24;
-  --border: rgba(255,255,255,.07);
-  --text: #e8eaf0;
-  --muted: #6b7280;
-  --dim: #3d4454;
-  --aristo: #f5a623;
+  --bg:        #0d0f14;
+  --card:      #13161d;
+  --card2:     #181c24;
+  --border:    rgba(255,255,255,.07);
+  --text:      #e8eaf0;
+  --muted:     #6b7280;
+  --dim:       #3a4050;
+  --aristo:    #f5a623;
   --aristo-bg: rgba(245,166,35,.08);
-  --aristo-border: rgba(245,166,35,.2);
-  --success: #22c55e;
-  --success-bg: rgba(34,197,94,.08);
-  --danger: #ef4444;
-  --danger-bg: rgba(239,68,68,.08);
-  --info: #38bdf8;
-  --info-bg: rgba(56,189,248,.08);
-  --purple: #a78bfa;
+  --aristo-bd: rgba(245,166,35,.22);
+  --green:     #22c55e;
+  --green-bg:  rgba(34,197,94,.08);
+  --red:       #ef4444;
+  --red-bg:    rgba(239,68,68,.08);
+  --blue:      #38bdf8;
+  --blue-bg:   rgba(56,189,248,.08);
+  --purple:    #a78bfa;
   --purple-bg: rgba(167,139,250,.08);
-  --radius: 12px;
-  --shadow: 0 1px 3px rgba(0,0,0,.4), 0 8px 32px rgba(0,0,0,.3);
+  --r: 12px;
+  --shadow: 0 2px 8px rgba(0,0,0,.5),0 12px 40px rgba(0,0,0,.3);
 }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5}
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* LOGIN */
+#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.login-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:40px 36px;width:100%;max-width:400px;box-shadow:var(--shadow)}
+.login-logo{font-size:22px;font-weight:700;letter-spacing:-.5px;color:var(--aristo);margin-bottom:4px}
+.login-logo span{color:var(--muted);font-weight:400;font-size:14px}
+.login-sub{color:var(--muted);font-size:13px;margin-bottom:28px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px}
+.field input{width:100%;padding:11px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:'DM Mono',monospace;transition:border-color .2s}
+.field input:focus{outline:none;border-color:var(--aristo)}
+.btn{cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;border:none;border-radius:8px;padding:11px 20px;transition:opacity .15s,transform .1s}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--aristo);color:#000}
+.btn-primary:hover{opacity:.88}
+.btn-ghost{background:var(--card2);color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{opacity:.8}
+.login-error{color:var(--red);font-size:12px;margin-top:10px;display:none;text-align:center}
 
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  font-size: 14px;
-  line-height: 1.5;
-}
+/* APP */
+#app{display:none}
+.topbar{display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20}
+.topbar-logo{font-size:14px;font-weight:700;letter-spacing:-.3px;color:var(--aristo);white-space:nowrap}
+.topbar-logo span{color:var(--muted);font-weight:400}
+.topbar-search{flex:1;max-width:320px;display:flex;gap:6px}
+.topbar-search input{flex:1;padding:7px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;font-family:'DM Mono',monospace}
+.topbar-search input:focus{outline:none;border-color:var(--aristo)}
+.topbar-search .btn{padding:7px 14px;font-size:12px}
+.topbar-right{margin-left:auto}
+.topbar-right .btn{padding:6px 14px;font-size:12px}
 
-/* ── CONFIG PANEL ─────────────────────────────── */
-#configPanel {
-  max-width: 500px;
-  margin: 80px auto;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 36px 32px;
-  box-shadow: var(--shadow);
-}
-#configPanel h1 {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 4px;
-  letter-spacing: -.3px;
-}
-#configPanel p {
-  color: var(--muted);
-  font-size: 13px;
-  margin-bottom: 28px;
-}
-.field { margin-bottom: 16px; }
-.field label { display: block; font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 6px; letter-spacing: .3px; text-transform: uppercase; }
-.field input {
-  width: 100%;
-  padding: 10px 14px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text);
-  font-size: 13px;
-  font-family: 'DM Mono', monospace;
-  transition: border-color .2s;
-}
-.field input:focus { outline: none; border-color: var(--aristo); }
-.btn-row { display: flex; gap: 10px; margin-top: 24px; }
-button {
-  cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 20px;
-  transition: opacity .15s, transform .1s;
-}
-button:hover { opacity: .85; }
-button:active { transform: scale(.98); }
-.btn-primary { background: var(--aristo); color: #000; flex: 1; }
-.btn-ghost { background: var(--card2); color: var(--text); border: 1px solid var(--border); }
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:300px 1fr;gap:14px;padding:14px;max-width:1280px;margin:0 auto;align-items:start}
 
-/* ── MAIN LAYOUT ──────────────────────────────── */
-#app { display: none; }
-.layout {
-  display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: 16px;
-  padding: 16px;
-  max-width: 1200px;
-  margin: 0 auto;
-  align-items: start;
-}
+/* LEFT CARD */
+.left-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;position:sticky;top:52px}
+.ch{padding:18px 18px 14px;border-bottom:1px solid var(--border)}
+.ch-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+.avatar{width:42px;height:42px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--aristo) 0%,#c87d00 100%);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#000}
+.ch-info{flex:1;min-width:0}
+.ch-name{font-size:15px;font-weight:600;line-height:1.3}
+.ch-email{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}
+.prio-badge{font-size:9px;font-weight:700;letter-spacing:.7px;padding:3px 8px;border-radius:20px;text-transform:uppercase;flex-shrink:0;margin-top:2px}
+.pv1{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.3)}
+.pv2{background:var(--aristo-bg);color:var(--aristo);border:1px solid var(--aristo-bd)}
+.pv3{background:var(--blue-bg);color:var(--blue);border:1px solid rgba(56,189,248,.25)}
+.pv4{background:rgba(107,114,128,.08);color:var(--muted);border:1px solid rgba(107,114,128,.2)}
+.score-row{display:flex;align-items:center;gap:10px;background:var(--card2);border-radius:8px;padding:10px 12px}
+.ring-wrap{position:relative;width:44px;height:44px;flex-shrink:0}
+.ring-wrap svg{transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:var(--border);stroke-width:4}
+.ring-fill{fill:none;stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset .6s ease}
+.ring-lbl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.s-title{font-size:11px;color:var(--muted)}
+.s-val{font-size:19px;font-weight:700;line-height:1.2}
+.s-sub{font-size:10px;color:var(--muted)}
 
-/* ── LEFT CARD ─────────────────────────────────── */
-.left-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-  position: sticky;
-  top: 16px;
-}
-.contact-header {
-  padding: 20px 20px 16px;
-  border-bottom: 1px solid var(--border);
-}
-.contact-top {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-.avatar {
-  width: 44px; height: 44px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--aristo) 0%, #e08b00 100%);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; font-weight: 700; color: #000;
-  flex-shrink: 0;
-}
-.contact-name-block { flex: 1; min-width: 0; }
-.contact-name { font-size: 15px; font-weight: 600; line-height: 1.3; }
-.contact-email { font-size: 11px; color: var(--muted); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.priority-badge {
-  font-size: 9px; font-weight: 700; letter-spacing: .8px;
-  padding: 3px 8px; border-radius: 20px;
-  text-transform: uppercase; flex-shrink: 0; margin-top: 2px;
-}
-.prio-very-high { background: rgba(239,68,68,.15); color: #f87171; border: 1px solid rgba(239,68,68,.3); }
-.prio-high { background: rgba(245,166,35,.12); color: var(--aristo); border: 1px solid var(--aristo-border); }
-.prio-medium { background: rgba(56,189,248,.1); color: var(--info); border: 1px solid rgba(56,189,248,.2); }
-.prio-low { background: rgba(107,114,128,.1); color: var(--muted); border: 1px solid rgba(107,114,128,.2); }
+/* STAGE HERO */
+.stage-hero{margin:12px 16px;border-radius:10px;overflow:hidden;border:1.5px solid var(--aristo-bd);background:var(--aristo-bg)}
+.stage-hero.lost{border-color:rgba(239,68,68,.3);background:var(--red-bg)}
+.stage-hero.won{border-color:rgba(34,197,94,.3);background:var(--green-bg)}
+.stage-hero.none{border-color:var(--border);background:var(--card2)}
+.sh-top{padding:8px 12px 3px;display:flex;align-items:center;gap:6px}
+.sh-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:var(--aristo);box-shadow:0 0 6px var(--aristo);animation:glow 2s infinite}
+.stage-hero.lost .sh-dot{background:var(--red);box-shadow:0 0 6px var(--red);animation:none}
+.stage-hero.won .sh-dot{background:var(--green);box-shadow:0 0 6px var(--green);animation:none}
+.stage-hero.none .sh-dot{background:var(--muted);box-shadow:none;animation:none}
+@keyframes glow{0%,100%{box-shadow:0 0 4px var(--aristo)}50%{box-shadow:0 0 12px var(--aristo),0 0 24px rgba(245,166,35,.25)}}
+.sh-pipe{font-size:9px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--aristo);opacity:.75}
+.stage-hero.lost .sh-pipe{color:var(--red)}
+.stage-hero.won .sh-pipe{color:var(--green)}
+.stage-hero.none .sh-pipe{color:var(--muted)}
+.sh-body{padding:2px 12px 10px}
+.sh-name{font-size:17px;font-weight:700;color:var(--aristo);line-height:1.2;margin-bottom:3px}
+.stage-hero.lost .sh-name{color:var(--red)}
+.stage-hero.won .sh-name{color:var(--green)}
+.stage-hero.none .sh-name{color:var(--muted);font-size:13px;font-weight:500}
+.sh-time{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px}
+.sh-time::before{content:'⏱';font-size:10px}
 
-/* Score ring */
-.score-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: var(--card2);
-  border-radius: 8px;
-  padding: 10px 12px;
-}
-.score-ring-wrap { position: relative; width: 44px; height: 44px; flex-shrink: 0; }
-.score-ring-wrap svg { transform: rotate(-90deg); }
-.score-ring-bg { fill: none; stroke: var(--border); stroke-width: 4; }
-.score-ring-fill { fill: none; stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset .6s ease; }
-.score-label {
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 700;
-}
-.score-meta { flex: 1; }
-.score-title { font-size: 11px; color: var(--muted); }
-.score-value { font-size: 18px; font-weight: 700; line-height: 1.2; }
-.score-sub { font-size: 10px; color: var(--muted); }
+/* PROP ROWS */
+.section-block{padding:10px 16px 4px}
+.section-block-title{font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
+.prop-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)}
+.prop-row:last-child{border-bottom:none}
+.pk{font-size:12px;color:var(--muted);flex-shrink:0;max-width:48%}
+.pv{font-size:12px;font-weight:500;text-align:right;word-break:break-word;max-width:52%}
+.pv.hot{color:#f87171}
+.pv.warm{color:var(--aristo)}
+.pv.cold{color:var(--blue)}
+.brand-chips{display:flex;flex-wrap:wrap;gap:6px;padding:10px 16px 14px}
+.bchip{font-size:10px;font-weight:700;letter-spacing:.4px;padding:3px 10px;border-radius:20px;background:var(--aristo-bg);color:var(--aristo);border:1px solid var(--aristo-bd)}
+.blabel{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;background:transparent;color:var(--muted);border:1px solid var(--border)}
 
-/* ── CURRENT STAGE INDICATOR ── */
-.stage-indicator {
-  margin: 0 16px 0;
-  border-radius: 10px;
-  overflow: hidden;
-  border: 1.5px solid var(--aristo-border);
-  background: var(--aristo-bg);
-}
-.stage-indicator-header {
-  padding: 8px 12px 4px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.stage-indicator-header .dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--aristo);
-  box-shadow: 0 0 6px var(--aristo);
-  animation: pulse 2s infinite;
-  flex-shrink: 0;
-}
-@keyframes pulse {
-  0%, 100% { box-shadow: 0 0 4px var(--aristo); }
-  50% { box-shadow: 0 0 10px var(--aristo), 0 0 20px rgba(245,166,35,.3); }
-}
-.stage-indicator-header .pipeline-label {
-  font-size: 9px; font-weight: 600; text-transform: uppercase;
-  letter-spacing: .8px; color: var(--aristo); opacity: .7;
-}
-.stage-indicator-body {
-  padding: 2px 12px 10px;
-}
-.stage-indicator-name {
-  font-size: 16px; font-weight: 700; color: var(--aristo);
-  line-height: 1.2; margin-bottom: 3px;
-}
-.stage-indicator-time {
-  font-size: 11px; color: var(--muted);
-  display: flex; align-items: center; gap: 4px;
-}
-.stage-indicator-time::before {
-  content: '⏱';
-  font-size: 10px;
-}
-.stage-indicator.lost {
-  border-color: rgba(239,68,68,.3);
-  background: rgba(239,68,68,.06);
-}
-.stage-indicator.lost .dot { background: var(--danger); box-shadow: 0 0 6px var(--danger); }
-.stage-indicator.lost .pipeline-label { color: var(--danger); }
-.stage-indicator.lost .stage-indicator-name { color: var(--danger); }
-.stage-indicator.won {
-  border-color: rgba(34,197,94,.3);
-  background: rgba(34,197,94,.06);
-}
-.stage-indicator.won .dot { background: var(--success); box-shadow: 0 0 6px var(--success); }
-.stage-indicator.won .pipeline-label { color: var(--success); }
-.stage-indicator.won .stage-indicator-name { color: var(--success); }
+/* RIGHT COLUMN */
+.right-col{display:flex;flex-direction:column;gap:12px}
+.scard{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.shead{display:flex;align-items:center;gap:10px;padding:13px 18px 11px;border-bottom:1px solid var(--border)}
+.sicon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.stitle{font-size:14px;font-weight:600;flex:1}
+.scnt{font-size:11px;font-weight:600;background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:2px 9px;color:var(--muted)}
 
-/* ── LEFT CARD PROPERTIES ─── */
-.props-section {
-  padding: 12px 16px 4px;
-}
-.props-section-title {
-  font-size: 9px; font-weight: 600; text-transform: uppercase;
-  letter-spacing: .8px; color: var(--dim); margin-bottom: 8px;
-}
-.prop-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 5px 0;
-  border-bottom: 1px solid var(--border);
-}
-.prop-row:last-child { border-bottom: none; }
-.prop-key { font-size: 12px; color: var(--muted); flex-shrink: 0; max-width: 48%; }
-.prop-val { font-size: 12px; font-weight: 500; text-align: right; word-break: break-word; max-width: 52%; }
-.prop-val.highlight { color: var(--aristo); }
-.prop-val.success { color: var(--success); }
-.prop-val.danger { color: var(--danger); }
+/* PIPELINE */
+.pipeline-wrap{padding:14px 18px 16px}
+.pipe-label{font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--dim);display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.pipe-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.steps{display:flex;align-items:flex-start}
+.step{flex:1;display:flex;flex-direction:column;align-items:center;position:relative}
+.step:not(:last-child)::after{content:'';position:absolute;top:14px;left:calc(50% + 14px);right:calc(-50% + 14px);height:2px;background:var(--border);z-index:0}
+.step.done:not(:last-child)::after{background:rgba(34,197,94,.35)}
+.step.current:not(:last-child)::after{background:rgba(245,166,35,.25)}
+.step-dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--dim);background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:12px;position:relative;z-index:1;flex-shrink:0;transition:all .2s}
+.step.done .step-dot{border-color:var(--green);background:var(--green-bg);color:var(--green)}
+.step.current .step-dot{border-color:var(--aristo);background:var(--aristo-bg);box-shadow:0 0 0 4px rgba(245,166,35,.15);animation:step-pulse 2.2s infinite}
+@keyframes step-pulse{0%,100%{box-shadow:0 0 0 4px rgba(245,166,35,.15)}50%{box-shadow:0 0 0 8px rgba(245,166,35,.06)}}
+.step.lost .step-dot{border-color:var(--red);background:var(--red-bg);color:var(--red)}
+.step.won .step-dot{border-color:var(--green);background:var(--green-bg);color:var(--green)}
+.step.future .step-dot{opacity:.3}
+.step-name{font-size:10px;font-weight:500;color:var(--muted);text-align:center;margin-top:6px;line-height:1.3}
+.step.current .step-name{color:var(--aristo);font-weight:700}
+.step.done .step-name{color:rgba(34,197,94,.8)}
+.step.lost .step-name{color:var(--red)}
+.step.won .step-name{color:var(--green)}
+.step.future .step-name{opacity:.35}
+.step-time{font-size:9px;color:var(--dim);text-align:center;margin-top:2px;font-family:'DM Mono',monospace}
+.step.done .step-time{color:rgba(34,197,94,.55)}
+.step.current .step-time{color:rgba(245,166,35,.65)}
+.pipe-divider{display:flex;align-items:center;gap:10px;padding:4px 18px 2px;font-size:10px;color:var(--muted)}
+.pipe-div-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--aristo-bd),transparent)}
+.closers-inactive{opacity:.25;pointer-events:none}
 
-/* Brand chips */
-.brand-chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 16px 14px; }
-.brand-chip {
-  font-size: 10px; font-weight: 700; letter-spacing: .5px;
-  padding: 3px 10px; border-radius: 20px;
-  border: 1px solid var(--aristo-border);
-  background: var(--aristo-bg);
-  color: var(--aristo);
-}
-.brand-label-chip {
-  font-size: 10px; font-weight: 600; letter-spacing: .3px;
-  padding: 3px 10px; border-radius: 20px;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--muted);
-}
+/* COURSES */
+.courses-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:10px;padding:14px 18px}
+.course-card{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px;position:relative;overflow:hidden}
+.cc-bar{position:absolute;top:0;left:0;right:0;height:3px}
+.cc-brand{font-size:9px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;margin-bottom:4px}
+.cc-name{font-size:12px;font-weight:600;line-height:1.4;margin-bottom:6px}
+.cc-date{font-size:10px;color:var(--muted);margin-bottom:6px}
+.tag{font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;padding:2px 8px;border-radius:20px;display:inline-block}
 
-/* ── RIGHT COLUMN ──────────────────────────────── */
-.right-col { display: flex; flex-direction: column; gap: 12px; }
+/* MEETINGS */
+.meetings-list{padding:6px 0}
+.meeting-row{display:flex;gap:12px;padding:12px 18px;border-bottom:1px solid var(--border);transition:background .15s}
+.meeting-row:last-child{border-bottom:none}
+.meeting-row:hover{background:rgba(255,255,255,.02)}
+.mi-icon{font-size:18px;flex-shrink:0;padding-top:1px}
+.mi-body{flex:1}
+.mi-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.mi-title{font-size:13px;font-weight:600;flex:1}
+.mi-outcome{font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid;text-transform:uppercase;letter-spacing:.4px}
+.mi-meta{display:flex;gap:14px;flex-wrap:wrap}
+.mi-meta span{font-size:11px;color:var(--muted)}
 
-.section-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-.section-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 18px 12px;
-  border-bottom: 1px solid var(--border);
-}
-.section-icon {
-  width: 28px; height: 28px;
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px; flex-shrink: 0;
-}
-.section-title { font-size: 14px; font-weight: 600; flex: 1; }
-.section-count {
-  font-size: 11px; font-weight: 600;
-  background: var(--card2);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 2px 9px;
-  color: var(--muted);
-}
+/* TIMELINE */
+.timeline-wrap{padding:12px 18px}
+.tl-item{display:flex;gap:12px;margin-bottom:2px;position:relative}
+.tl-item:not(:last-child) .tl-line{position:absolute;left:13px;top:26px;bottom:-2px;width:1px;background:var(--border)}
+.tl-dot{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--border);background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;z-index:1}
+.tl-body{flex:1;padding-bottom:14px}
+.tl-title{font-size:12px;font-weight:500;line-height:1.4}
+.tl-date{font-size:10px;color:var(--dim);margin-top:2px}
 
-/* ── ARISTO PIPELINE ──────────────────────────── */
-.pipeline-block { padding: 14px 18px 16px; }
-.pipeline-label {
-  font-size: 9px; font-weight: 700; letter-spacing: .8px;
-  text-transform: uppercase; color: var(--dim);
-  margin-bottom: 12px;
-  display: flex; align-items: center; gap: 6px;
-}
-.pipeline-label::after {
-  content: ''; flex: 1; height: 1px; background: var(--border);
-}
-.pipeline-steps { display: flex; align-items: stretch; gap: 0; }
-.step {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-}
-.step:not(:last-child)::after {
-  content: '';
-  position: absolute;
-  top: 16px;
-  left: calc(50% + 16px);
-  right: calc(-50% + 16px);
-  height: 2px;
-  background: var(--border);
-  z-index: 0;
-}
-.step.done:not(:last-child)::after { background: var(--success); opacity: .4; }
-.step.current:not(:last-child)::after { background: var(--aristo); opacity: .3; }
-
-.step-circle {
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  border: 2px solid var(--border);
-  background: var(--card2);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px;
-  position: relative; z-index: 1;
-  transition: all .2s;
-  flex-shrink: 0;
-}
-.step.done .step-circle {
-  border-color: var(--success);
-  background: var(--success-bg);
-  color: var(--success);
-}
-.step.current .step-circle {
-  border-color: var(--aristo);
-  background: var(--aristo-bg);
-  box-shadow: 0 0 0 4px rgba(245,166,35,.15);
-  animation: ring-pulse 2s infinite;
-}
-@keyframes ring-pulse {
-  0%, 100% { box-shadow: 0 0 0 4px rgba(245,166,35,.15); }
-  50% { box-shadow: 0 0 0 8px rgba(245,166,35,.08); }
-}
-.step.lost .step-circle { border-color: var(--danger); background: var(--danger-bg); color: var(--danger); }
-.step.won .step-circle { border-color: var(--success); background: var(--success-bg); color: var(--success); }
-.step.future .step-circle { opacity: .35; }
-
-.step-name {
-  font-size: 10px; font-weight: 500; color: var(--muted);
-  text-align: center; margin-top: 6px; line-height: 1.3;
-}
-.step.current .step-name { color: var(--aristo); font-weight: 700; }
-.step.done .step-name { color: var(--success); }
-.step.lost .step-name { color: var(--danger); }
-.step.won .step-name { color: var(--success); }
-
-.step-time {
-  font-size: 9px; color: var(--dim); text-align: center;
-  margin-top: 2px; font-family: 'DM Mono', monospace;
-}
-.step.current .step-time { color: rgba(245,166,35,.7); }
-.step.done .step-time { color: rgba(34,197,94,.6); }
-
-.pipeline-divider {
-  display: flex; align-items: center; gap: 10px;
-  padding: 6px 18px;
-  font-size: 10px; color: var(--muted);
-}
-.pipeline-divider-arrow {
-  flex: 1; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--border), var(--aristo-border), var(--border), transparent);
-}
-
-/* ── CURSOS ──────────────────────────────────── */
-.courses-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 10px;
-  padding: 14px 18px;
-}
-.course-card {
-  background: var(--card2);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px;
-  position: relative;
-  overflow: hidden;
-}
-.course-top-bar {
-  position: absolute; top: 0; left: 0; right: 0; height: 3px;
-}
-.course-brand { font-size: 9px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; margin-bottom: 4px; }
-.course-name { font-size: 12px; font-weight: 600; line-height: 1.4; margin-bottom: 6px; }
-.course-date { font-size: 10px; color: var(--muted); margin-bottom: 6px; }
-.course-tag {
-  font-size: 9px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase;
-  padding: 2px 8px; border-radius: 20px;
-  display: inline-block;
-}
-
-/* ── REUNIÕES ───────────────────────────────── */
-.meetings-list { padding: 8px 0; }
-.meeting-item {
-  display: flex; gap: 12px;
-  padding: 12px 18px;
-  border-bottom: 1px solid var(--border);
-  transition: background .15s;
-}
-.meeting-item:last-child { border-bottom: none; }
-.meeting-item:hover { background: rgba(255,255,255,.02); }
-.meeting-icon { font-size: 18px; flex-shrink: 0; padding-top: 2px; }
-.meeting-content { flex: 1; }
-.meeting-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
-.meeting-title { font-size: 13px; font-weight: 600; flex: 1; }
-.meeting-outcome {
-  font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 20px;
-  border: 1px solid; text-transform: uppercase; letter-spacing: .4px;
-}
-.meeting-meta { display: flex; gap: 14px; flex-wrap: wrap; }
-.meeting-meta span { font-size: 11px; color: var(--muted); }
-
-/* ── TIMELINE ───────────────────────────────── */
-.timeline { padding: 12px 18px; }
-.tl-item { display: flex; gap: 12px; margin-bottom: 2px; position: relative; }
-.tl-item:not(:last-child) .tl-line { position: absolute; left: 15px; top: 28px; bottom: -2px; width: 1px; background: var(--border); }
-.tl-dot { width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid var(--border); background: var(--card2); display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; z-index: 1; }
-.tl-body { flex: 1; padding-bottom: 14px; }
-.tl-title { font-size: 12px; font-weight: 600; line-height: 1.4; }
-.tl-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
-.tl-date { font-size: 10px; color: var(--dim); margin-top: 3px; }
-.tl-tag { font-size: 9px; font-weight: 700; letter-spacing: .4px; padding: 2px 7px; border-radius: 20px; text-transform: uppercase; display: inline-block; margin-top: 4px; }
-
-/* ── EMPTY / LOADER ────────────────────────── */
-.empty-msg { padding: 28px; text-align: center; color: var(--muted); font-size: 13px; }
-.loader { display: flex; align-items: center; justify-content: center; padding: 40px; gap: 6px; color: var(--muted); font-size: 13px; }
-.spinner { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--aristo); border-radius: 50%; animation: spin .7s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* ── TOPBAR ─────────────────────────────────── */
-.topbar {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 16px;
-  background: var(--card);
-  border-bottom: 1px solid var(--border);
-  position: sticky; top: 0; z-index: 10;
-}
-.topbar-logo { font-size: 13px; font-weight: 700; letter-spacing: -.3px; color: var(--aristo); }
-.topbar-logo span { color: var(--muted); font-weight: 400; }
-.topbar-search {
-  flex: 1; max-width: 320px;
-  display: flex; gap: 6px;
-}
-.topbar-search input {
-  flex: 1; padding: 7px 12px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text);
-  font-size: 12px;
-  font-family: 'DM Mono', monospace;
-}
-.topbar-search input:focus { outline: none; border-color: var(--aristo); }
-.topbar-search button { padding: 7px 14px; border-radius: 8px; background: var(--aristo); color: #000; font-size: 12px; font-weight: 700; }
-.back-btn {
-  font-size: 12px; color: var(--muted);
-  background: none; cursor: pointer; border: none;
-  padding: 6px 12px;
-  border-radius: 8px;
-}
-.back-btn:hover { background: var(--card2); color: var(--text); }
-.toast {
-  position: fixed; bottom: 20px; right: 20px;
-  background: var(--danger); color: #fff;
-  padding: 10px 16px; border-radius: 8px;
-  font-size: 13px; display: none;
-  box-shadow: 0 4px 20px rgba(0,0,0,.4);
-}
-
-/* stage indicator spacing */
-.left-card .stage-indicator { margin: 12px 16px; }
+/* UTILS */
+.empty{padding:28px;text-align:center;color:var(--muted);font-size:13px}
+.loader{display:flex;align-items:center;justify-content:center;padding:60px;gap:8px;color:var(--muted);font-size:13px}
+.spinner{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--aristo);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:20px;right:20px;z-index:100;background:var(--red);color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;display:none;box-shadow:0 4px 20px rgba(0,0,0,.4);max-width:320px}
 </style>
 </head>
 <body>
 
-<!-- CONFIG PANEL -->
-<div id="configPanel">
-  <h1>Primum · Lead Viewer</h1>
-  <p>Visualização de contatos Aristo com jornada, etapas e cursos</p>
-  <div class="field">
-    <label>Private App Token</label>
-    <input type="password" id="tokenInput" placeholder="pat-na1-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
-  </div>
-  <div class="field">
-    <label>HubSpot Contact ID</label>
-    <input type="text" id="contactInput" placeholder="ex: 123456789">
-  </div>
-  <div class="btn-row">
-    <button class="btn-primary" onclick="loadContact()">Carregar Contato</button>
-    <button class="btn-ghost" onclick="loadDemo()">Ver Demo</button>
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">Primum <span>· Lead Intelligence</span></div>
+    <div class="login-sub">Acesso restrito ao time interno</div>
+    <div class="field">
+      <label>Senha de acesso</label>
+      <input type="password" id="passInput" placeholder="••••••••••••"
+             onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn btn-primary" style="width:100%" onclick="doLogin()">Entrar</button>
+    <div class="login-error" id="loginErr">Senha incorreta.</div>
   </div>
 </div>
 
-<!-- MAIN APP -->
+<!-- APP -->
 <div id="app">
   <div class="topbar">
-    <div class="topbar-logo">Primum <span>· Lead Viewer</span></div>
+    <div class="topbar-logo">Primum <span>· Lead Intelligence</span></div>
     <div class="topbar-search">
-      <input type="text" id="searchBar" placeholder="Contact ID...">
-      <button onclick="loadFromBar()">Ir</button>
+      <input type="text" id="searchBar" placeholder="HubSpot Contact ID..."
+             onkeydown="if(event.key==='Enter')loadFromBar()">
+      <button class="btn btn-primary" onclick="loadFromBar()">Buscar</button>
     </div>
-    <button class="back-btn" onclick="showConfig()">← Config</button>
+    <div class="topbar-right">
+      <button class="btn btn-ghost" onclick="loadDemo()">Demo</button>
+    </div>
   </div>
-  <div id="mainContent"></div>
+  <div id="content">
+    <div class="empty" style="padding:80px">Digite um Contact ID acima para carregar o lead.</div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ── CONSTANTS ──────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════
+const PROXY       = 'https://primum-proxy.vinicius-reis.workers.dev';
+const ACCESS_HASH = '45f48424'; // hash simples de Primum@2026
+
+// ═══════════════════════════════════════════════════
+// STAGE MAPS
+// ═══════════════════════════════════════════════════
 const LEAD_STAGES = {
-  '1087683153': 'Prospecção',
-  '1087683154': 'Abordagem',
-  '1087683156': 'Qualificação',
-  '1269135952': 'Reunião Agendada',
-  '1269320048': 'Perdido',
+  '1087683153':'Prospecção',
+  '1087683154':'Abordagem',
+  '1087683156':'Qualificação',
+  '1269135952':'Reunião Agendada',
+  '1269320048':'Perdido',
 };
 const DEAL_STAGES = {
-  '1269123352': 'Sessão Estratégica',
-  '1269123353': 'Pós-Sessão',
-  '1269225336': 'Venda/Matrícula',
-  '1269225337': 'Perdido',
+  '1269123352':'Sessão Estratégica',
+  '1269123353':'Pós-Sessão',
+  '1269225336':'Venda/Matrícula',
+  '1269225337':'Perdido',
 };
-const LEAD_STAGE_ORDER = ['1087683153','1087683154','1087683156','1269135952','1269320048'];
-const DEAL_STAGE_ORDER = ['1269123352','1269123353','1269225336','1269225337'];
+const LEAD_ORDER = ['1087683153','1087683154','1087683156','1269135952','1269320048'];
+const DEAL_ORDER = ['1269123352','1269123353','1269225336','1269225337'];
 
-const LEAD_TIME_PROPS = {
-  '1087683153': 'hs_v2_cumulative_time_in_1087683153',
-  '1087683154': 'hs_v2_cumulative_time_in_1087683154',
-  '1087683156': 'hs_v2_cumulative_time_in_1087683156',
+const LEAD_TIME_KEY = {
+  '1087683153':'hs_v2_cumulative_time_in_1087683153',
+  '1087683154':'hs_v2_cumulative_time_in_1087683154',
+  '1087683156':'hs_v2_cumulative_time_in_1087683156',
 };
-const DEAL_TIME_PROPS = {
-  '1269123352': 'hs_v2_cumulative_time_in_1269123352',
-  '1269123353': 'hs_v2_cumulative_time_in_1269123353',
+const DEAL_TIME_KEY = {
+  '1269123352':'hs_v2_cumulative_time_in_1269123352',
+  '1269123353':'hs_v2_cumulative_time_in_1269123353',
 };
 
-// Stage-specific properties (all from lead object)
-const STAGE_PROPS = {
-  // Abordagem+
-  'followup': { key: 'quantidade_de_followup', label: 'Follow-ups' },
-  // Qualificação+
-  'ano_prova': { key: 'ano_que_vai_prestar_a_prova', label: 'Ano da prova' },
-  'ano_formatura': { key: 'em_que_que_voce_se_forma', label: 'Formatura em' },
-  'instituicao': { key: 'instituicao_de_ensino_superior', label: 'Instituição' },
-  'prova': { key: 'prova_pretendida', label: 'Prova pretendida' },
-  'produto_aristo': { key: 'aristo_produto_pretendido', label: 'Produto Aristo' },
-  'temperatura': { key: 'temperatura_do_lead', label: 'Temperatura' },
-  // Pós-sessão+
-  'renovacao': { key: 'renovacao', label: 'Renovação' },
-  'status_reuniao': { key: 'status_da_reuniao', label: 'Status reunião' },
-  'status_negocio': { key: 'status_do_negocio', label: 'Status negócio' },
-  'urgencia': { key: 'nivel_de_urgencia', label: 'Urgência' },
-  'bant_autoridade': { key: 'bant_autoridade', label: 'BANT Autoridade' },
-  'bant_necessidade': { key: 'bant__necessidade', label: 'BANT Necessidade' },
-  'link_pagamento': { key: 'link_de_pagamento_enviado', label: 'Link pagamento' },
-  'motivo_noshow': { key: 'motivo_do_noshow', label: 'Motivo no-show' },
-  'retornar_sdr': { key: 'retornar_para_sdr', label: 'Retornar ao SDR' },
-};
+// Propriedades de etapa — todas no objeto lead
+const STAGE_PROPS = [
+  {key:'quantidade_de_followup',         label:'Follow-ups'       },
+  {key:'ano_que_vai_prestar_a_prova',    label:'Ano da prova'     },
+  {key:'em_que_que_voce_se_forma',       label:'Formatura em'     },
+  {key:'instituicao_de_ensino_superior', label:'Instituição'      },
+  {key:'prova_pretendida',               label:'Prova pretendida' },
+  {key:'aristo_produto_pretendido',      label:'Produto Aristo'   },
+  {key:'temperatura_do_lead',            label:'Temperatura'      },
+  {key:'renovacao',                      label:'Renovação'        },
+  {key:'status_da_reuniao',              label:'Status reunião'   },
+  {key:'status_do_negocio',              label:'Status negócio'   },
+  {key:'nivel_de_urgencia',              label:'Urgência'         },
+  {key:'bant_autoridade',                label:'BANT Autoridade'  },
+  {key:'bant__necessidade',              label:'BANT Necessidade' },
+  {key:'link_de_pagamento_enviado',      label:'Link pagamento'   },
+  {key:'motivo_do_noshow',               label:'Motivo no-show'   },
+  {key:'retornar_para_sdr',              label:'Retornar ao SDR'  },
+];
 
 const BRANDS = {
-  BWS: { label: 'BWS', color: '#38bdf8', bg: 'rgba(56,189,248,.1)' },
-  ARISTO: { label: 'Aristo', color: '#f5a623', bg: 'rgba(245,166,35,.1)' },
-  MEDQ: { label: 'MedQ', color: '#a78bfa', bg: 'rgba(167,139,250,.1)' },
-  EDUQ: { label: 'EDUQ', color: '#34d399', bg: 'rgba(52,211,153,.1)' },
-  CBI: { label: 'CBI', color: '#f472b6', bg: 'rgba(244,114,182,.1)' },
-  OUTRO: { label: 'Outro', color: '#6b7280', bg: 'rgba(107,114,128,.1)' },
+  BWS:   {label:'BWS',   color:'#38bdf8',bg:'rgba(56,189,248,.1)' },
+  ARISTO:{label:'Aristo',color:'#f5a623',bg:'rgba(245,166,35,.1)' },
+  MEDQ:  {label:'MedQ',  color:'#a78bfa',bg:'rgba(167,139,250,.1)'},
+  EDUQ:  {label:'EDUQ',  color:'#34d399',bg:'rgba(52,211,153,.1)' },
+  CBI:   {label:'CBI',   color:'#f472b6',bg:'rgba(244,114,182,.1)'},
+  OUTRO: {label:'Outro', color:'#6b7280',bg:'rgba(107,114,128,.1)'},
 };
 
-let TOKEN = '';
+// ═══════════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════════
+function hashStr(s){
+  let h=0;
+  for(let i=0;i<s.length;i++) h=(Math.imul(31,h)+s.charCodeAt(i))|0;
+  return(h>>>0).toString(16).slice(0,8);
+}
+function doLogin(){
+  const v=document.getElementById('passInput').value;
+  if(hashStr(v)===ACCESS_HASH){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('app').style.display='block';
+    const id=new URLSearchParams(location.search).get('contactId');
+    if(id){document.getElementById('searchBar').value=id;load(id);}
+  } else {
+    document.getElementById('loginErr').style.display='block';
+  }
+}
 
-// ── UTILS ──────────────────────────────────────────────────────
-function fmtDate(iso) {
-  if (!iso) return '—';
-  const d = new Date(iso);
-  return d.toLocaleDateString('pt-BR', { day:'2-digit', month:'short', year:'numeric' });
+// ═══════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════
+const fmtDate=iso=>iso?new Date(iso).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'}):'—';
+const fmtTime=iso=>iso?new Date(iso).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'';
+function fmtMs(ms){
+  if(!ms||isNaN(ms)||ms<=0) return null;
+  const d=Math.floor(ms/86400000);
+  return d===0?'< 1d':d===1?'1 dia':`${d} dias`;
 }
-function fmtDuration(ms) {
-  if (!ms || isNaN(ms)) return null;
-  const days = Math.floor(ms / 86400000);
-  if (days === 0) return '< 1d';
-  if (days === 1) return '1 dia';
-  return `${days} dias`;
+const initials=(a,b)=>((a||'')[0]||'')+((b||'')[0]||'');
+function detectBrand(t){
+  if(!t)return'OUTRO';
+  const u=t.toUpperCase();
+  if(u.includes('BWS')||u.includes('B.W.S'))return'BWS';
+  if(u.includes('ARISTO'))return'ARISTO';
+  if(u.includes('MEDQ')||u.includes('MDQ'))return'MEDQ';
+  if(u.includes('EDUQ'))return'EDUQ';
+  if(u.includes('CBI'))return'CBI';
+  return'OUTRO';
 }
-function fmtTime(iso) {
-  if (!iso) return '';
-  const d = new Date(iso);
-  return d.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
-}
-function getInitials(first, last) {
-  return ((first||'')[0]||'') + ((last||'')[0]||'');
-}
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.style.display = 'block';
-  setTimeout(() => t.style.display = 'none', 4000);
-}
-function detectBrand(txt) {
-  if (!txt) return 'OUTRO';
-  const u = txt.toUpperCase();
-  if (u.includes('BWS') || u.includes('B.W.S')) return 'BWS';
-  if (u.includes('ARISTO')) return 'ARISTO';
-  if (u.includes('MEDQ') || u.includes('MED Q') || u.includes('MDQ')) return 'MEDQ';
-  if (u.includes('EDUQ')) return 'EDUQ';
-  if (u.includes('CBI')) return 'CBI';
-  return 'OUTRO';
-}
-function isAristoBrand(contact, leads, deals) {
-  const cp = contact.properties || {};
-  if ((cp.grupo_primum||'').toUpperCase().includes('ARISTO')) return true;
-  for (const l of leads) {
-    const lp = l.properties || {};
-    if ((lp.hs_pipeline||'').toLowerCase().includes('aristo')) return true;
-    if ((lp.hs_lead_name||'').toUpperCase().includes('ARISTO')) return true;
-  }
-  for (const d of deals) {
-    const dp = d.properties || {};
-    if ((dp.pipeline||'').toLowerCase().includes('aristo')) return true;
-    if ((dp.dealname||'').toUpperCase().includes('ARISTO')) return true;
-  }
+function isAristo(cp,leads,deals){
+  if((cp.grupo_primum||'').toUpperCase().includes('ARISTO'))return true;
+  for(const l of leads){const lp=l.properties||{};if((lp.hs_pipeline||'').toLowerCase().includes('aristo'))return true;}
+  for(const d of deals){const dp=d.properties||{};if((dp.pipeline||'').toLowerCase().includes('aristo'))return true;}
   return false;
 }
+function showToast(m){
+  const t=document.getElementById('toast');
+  t.textContent=m;t.style.display='block';
+  setTimeout(()=>t.style.display='none',5000);
+}
+function row(label,value,cls=''){
+  const bad=['','null','undefined','-','0','false'];
+  if(!value||bad.includes(String(value).trim()))return'';
+  return`<div class="prop-row"><span class="pk">${label}</span><span class="pv ${cls}">${value}</span></div>`;
+}
 
-// ── API ────────────────────────────────────────────────────────
-async function hsGet(path) {
-  const r = await fetch(`https://api.hubapi.com${path}`, {
-    headers: { 'Authorization': `Bearer ${TOKEN}`, 'Content-Type': 'application/json' }
-  });
-  if (!r.ok) throw new Error(`API ${r.status}: ${path}`);
+// ═══════════════════════════════════════════════════
+// API — usa proxy Cloudflare (sem token no browser)
+// ═══════════════════════════════════════════════════
+async function hs(path){
+  const r=await fetch(`${PROXY}${path}`,{headers:{'Content-Type':'application/json'}});
+  if(!r.ok)throw new Error(`API ${r.status}: ${path}`);
   return r.json();
 }
-async function hsPost(path, body) {
-  const r = await fetch(`https://api.hubapi.com${path}`, {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${TOKEN}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-  if (!r.ok) throw new Error(`API ${r.status}: ${path}`);
+async function hsPost(path,body){
+  const r=await fetch(`${PROXY}${path}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!r.ok)throw new Error(`API ${r.status}: ${path}`);
   return r.json();
 }
 
-// ── LOAD ───────────────────────────────────────────────────────
-function showConfig() {
-  document.getElementById('configPanel').style.display = 'block';
-  document.getElementById('app').style.display = 'none';
+// ═══════════════════════════════════════════════════
+// LOAD
+// ═══════════════════════════════════════════════════
+function loadFromBar(){
+  const id=document.getElementById('searchBar').value.trim();
+  if(id)load(id);
 }
-function loadFromBar() {
-  const id = document.getElementById('searchBar').value.trim();
-  if (id) { document.getElementById('contactInput').value = id; loadContact(); }
-}
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && document.getElementById('app').style.display !== 'none') {
-    loadFromBar();
-  }
-});
 
-async function loadContact() {
-  TOKEN = document.getElementById('tokenInput').value.trim();
-  const cid = document.getElementById('contactInput').value.trim();
-  if (!TOKEN || !cid) { showToast('Preencha o token e o ID do contato'); return; }
-
-  document.getElementById('configPanel').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  document.getElementById('mainContent').innerHTML = '<div class="loader"><div class="spinner"></div> Carregando contato...</div>';
-
-  try {
-    const contactProps = [
-      'firstname','lastname','email','phone','lifecyclestage','lead_status',
+async function load(cid){
+  document.getElementById('searchBar').value=cid;
+  document.getElementById('content').innerHTML='<div class="loader"><div class="spinner"></div> Carregando contato...</div>';
+  try{
+    const cProps=[
+      'firstname','lastname','email','phone',
+      'lifecyclestage','lead_status',
       'hs_predictivecontactscore_v2','hs_predictivescoringtier',
-      'nome_do_ultimo_formulario','hs_analytics_source','createdate','notes_last_updated',
-      'num_associated_deals','perfil','grupo_primum','produtos_primum',
-      'historico_cursos_interesse','hs_email_open','hs_email_click',
-      'hs_email_replied','hs_email_bounce',
+      'nome_do_ultimo_formulario','hs_analytics_source',
+      'createdate','notes_last_updated','num_associated_deals',
+      'perfil','grupo_primum','produtos_primum','historico_cursos_interesse',
+      'hs_email_open','hs_email_click','hs_email_replied','hs_email_bounce',
     ].join(',');
 
-    const contact = await hsGet(`/crm/v3/objects/contacts/${cid}?properties=${contactProps}`);
+    const contact=await hs(`/crm/v3/objects/contacts/${cid}?properties=${cProps}`);
 
-    // Associations
-    const [leadAssoc, dealAssoc, meetingAssoc, activityAssoc] = await Promise.all([
-      hsGet(`/crm/v3/objects/contacts/${cid}/associations/leads`).catch(()=>({results:[]})),
-      hsGet(`/crm/v3/objects/contacts/${cid}/associations/deals`).catch(()=>({results:[]})),
-      hsGet(`/crm/v3/objects/contacts/${cid}/associations/meetings`).catch(()=>({results:[]})),
-      hsGet(`/crm/v3/objects/contacts/${cid}/associations/notes`).catch(()=>({results:[]})),
+    const[la,da,ma,na]=await Promise.all([
+      hs(`/crm/v3/objects/contacts/${cid}/associations/leads`).catch(()=>({results:[]})),
+      hs(`/crm/v3/objects/contacts/${cid}/associations/deals`).catch(()=>({results:[]})),
+      hs(`/crm/v3/objects/contacts/${cid}/associations/meetings`).catch(()=>({results:[]})),
+      hs(`/crm/v3/objects/contacts/${cid}/associations/notes`).catch(()=>({results:[]})),
     ]);
 
-    const leadIds = (leadAssoc.results||[]).map(x=>x.id||x.toObjectId);
-    const dealIds = (dealAssoc.results||[]).map(x=>x.id||x.toObjectId);
-    const meetingIds = (meetingAssoc.results||[]).map(x=>x.id||x.toObjectId);
-    const noteIds = (activityAssoc.results||[]).map(x=>x.id||x.toObjectId);
+    const ids=a=>(a.results||[]).map(x=>x.id||x.toObjectId).filter(Boolean);
+    const[leadIds,dealIds,meetIds,noteIds]=[ids(la),ids(da),ids(ma),ids(na)];
 
-    const allLeadProps = [
+    const leadProps=[
       'hs_lead_name','hs_pipeline','hs_pipeline_stage','createdate',
-      'quantidade_de_followup','ano_que_vai_prestar_a_prova','em_que_que_voce_se_forma',
-      'instituicao_de_ensino_superior','prova_pretendida','aristo_produto_pretendido','temperatura_do_lead',
-      'renovacao','status_da_reuniao','status_do_negocio','nivel_de_urgencia',
-      'bant_autoridade','bant__necessidade','link_de_pagamento_enviado',
-      'motivo_do_noshow','retornar_para_sdr',
-      'hs_v2_cumulative_time_in_1087683153','hs_v2_cumulative_time_in_1087683154',
-      'hs_v2_cumulative_time_in_1087683156',
-    ].join(',');
-
-    const allDealProps = [
+      ...STAGE_PROPS.map(s=>s.key),
+      ...Object.values(LEAD_TIME_KEY),
+    ];
+    const dealProps=[
       'dealname','pipeline','dealstage','amount','createdate',
-      'hs_v2_cumulative_time_in_1269123352','hs_v2_cumulative_time_in_1269123353',
-    ].join(',');
+      ...Object.values(DEAL_TIME_KEY),
+    ];
 
-    const [leads, deals, meetings, notes] = await Promise.all([
-      leadIds.length
-        ? hsPost('/crm/v3/objects/leads/batch/read', {
-            properties: allLeadProps.split(','),
-            inputs: leadIds.slice(0,20).map(id=>({id}))
-          }).then(d=>d.results||[])
-        : Promise.resolve([]),
-      dealIds.length
-        ? hsPost('/crm/v3/objects/deals/batch/read', {
-            properties: allDealProps.split(','),
-            inputs: dealIds.slice(0,20).map(id=>({id}))
-          }).then(d=>d.results||[])
-        : Promise.resolve([]),
-      meetingIds.length
-        ? hsPost('/crm/v3/objects/meetings/batch/read', {
-            properties: ['hs_meeting_title','hs_timestamp','hs_meeting_start_time','hs_createdate','hs_meeting_outcome','hubspot_owner_id'],
-            inputs: meetingIds.slice(0,20).map(id=>({id}))
-          }).then(d=>d.results||[])
-        : Promise.resolve([]),
-      noteIds.length
-        ? hsPost('/crm/v3/objects/notes/batch/read', {
-            properties: ['hs_note_body','hs_timestamp','hs_body_preview'],
-            inputs: noteIds.slice(0,30).map(id=>({id}))
-          }).then(d=>d.results||[])
-        : Promise.resolve([]),
+    const[leads,deals,meetings,notes]=await Promise.all([
+      leadIds.length?hsPost('/crm/v3/objects/leads/batch/read',{properties:leadProps,inputs:leadIds.slice(0,20).map(id=>({id}))}).then(d=>d.results||[]):Promise.resolve([]),
+      dealIds.length?hsPost('/crm/v3/objects/deals/batch/read',{properties:dealProps,inputs:dealIds.slice(0,20).map(id=>({id}))}).then(d=>d.results||[]):Promise.resolve([]),
+      meetIds.length?hsPost('/crm/v3/objects/meetings/batch/read',{properties:['hs_meeting_title','hs_timestamp','hs_meeting_start_time','hs_createdate','hs_meeting_outcome'],inputs:meetIds.slice(0,20).map(id=>({id}))}).then(d=>d.results||[]):Promise.resolve([]),
+      noteIds.length?hsPost('/crm/v3/objects/notes/batch/read',{properties:['hs_note_body','hs_body_preview','hs_timestamp'],inputs:noteIds.slice(0,30).map(id=>({id}))}).then(d=>d.results||[]):Promise.resolve([]),
     ]);
 
-    render(contact, leads, deals, meetings, notes);
-  } catch(err) {
+    render(contact,leads,deals,meetings,notes);
+  }catch(err){
     showToast(err.message);
-    document.getElementById('mainContent').innerHTML = `<div class="empty-msg">❌ ${err.message}</div>`;
+    document.getElementById('content').innerHTML=`<div class="empty">❌ ${err.message}</div>`;
   }
 }
 
-// ── DEMO ───────────────────────────────────────────────────────
-function loadDemo() {
-  document.getElementById('configPanel').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-
-  const contact = { id:'demo', properties:{
-    firstname:'Giuliana', lastname:'Baseggio',
-    email:'giubaseggiosouza@hotmail.com', phone:'51999972729',
-    lifecyclestage:'opportunity', lead_status:null,
-    hs_predictivecontactscore_v2:'5.29', hs_predictivescoringtier:'tier_1',
+// ═══════════════════════════════════════════════════
+// DEMO
+// ═══════════════════════════════════════════════════
+function loadDemo(){
+  const t=n=>new Date(Date.now()-n*86400000).toISOString();
+  const contact={id:'demo',properties:{
+    firstname:'Giuliana',lastname:'Baseggio',email:'giubaseggiosouza@hotmail.com',phone:'51999972729',
+    lifecyclestage:'opportunity',hs_predictivecontactscore_v2:'5.29',hs_predictivescoringtier:'tier_1',
     nome_do_ultimo_formulario:'Meetings Link: madureira-reis/sessao-estrategica-aristo',
-    hs_analytics_source:'PAID_SEARCH', createdate: new Date(Date.now()-75*86400000).toISOString(),
-    notes_last_updated: new Date(Date.now()-2*86400000).toISOString(),
-    num_associated_deals:'1', perfil:null, grupo_primum:'ARISTO',
-    hs_email_open:'4', hs_email_click:'2', hs_email_replied:'0', hs_email_bounce:'0',
+    hs_analytics_source:'PAID_SEARCH',createdate:t(75),notes_last_updated:t(2),
+    num_associated_deals:'1',grupo_primum:'ARISTO',
+    hs_email_open:'4',hs_email_click:'2',hs_email_replied:'0',hs_email_bounce:'0',
   }};
-  const leads = [{id:'l1', properties:{
-    hs_lead_name:'Giuliana – R1 Extensivo Direção 2026 – Aristo Direção – 2026',
-    hs_pipeline:'SDR Aristo', hs_pipeline_stage:'1269135952',
-    createdate: new Date(Date.now()-70*86400000).toISOString(),
-    quantidade_de_followup:'3',
-    ano_que_vai_prestar_a_prova:'2027',
-    em_que_que_voce_se_forma:'2026',
-    instituicao_de_ensino_superior:'UNIFESP',
-    prova_pretendida:'Revalida',
-    aristo_produto_pretendido:'R1 Extensivo',
-    temperatura_do_lead:'Quente',
-    status_da_reuniao:'Realizada',
-    status_do_negocio:'Em negociação',
-    nivel_de_urgencia:'Alta',
-    bant_autoridade:'Sim',
-    bant__necessidade:'Aprovação no R1',
-    hs_v2_cumulative_time_in_1087683153: String(4*86400000),
-    hs_v2_cumulative_time_in_1087683154: String(7*86400000),
-    hs_v2_cumulative_time_in_1087683156: String(5*86400000),
+  const leads=[{id:'l1',properties:{
+    hs_lead_name:'Giuliana – R1 Extensivo Direção 2026 – Aristo',
+    hs_pipeline:'SDR Aristo',hs_pipeline_stage:'1269135952',createdate:t(70),
+    quantidade_de_followup:'3',ano_que_vai_prestar_a_prova:'2027',
+    em_que_que_voce_se_forma:'2026',instituicao_de_ensino_superior:'UNIFESP',
+    prova_pretendida:'Revalida',aristo_produto_pretendido:'R1 Extensivo',
+    temperatura_do_lead:'Quente',status_da_reuniao:'Realizada',
+    status_do_negocio:'Em negociação',nivel_de_urgencia:'Alta',
+    bant_autoridade:'Sim',bant__necessidade:'Aprovação no R1',
+    hs_v2_cumulative_time_in_1087683153:String(4*86400000),
+    hs_v2_cumulative_time_in_1087683154:String(7*86400000),
+    hs_v2_cumulative_time_in_1087683156:String(5*86400000),
   }}];
-  const deals = [{id:'d1', properties:{
-    dealname:'Giuliana – R1 Extensivo Direção 2026 – Aristo Direção – 2026',
-    pipeline:'Aristo - Closers', dealstage:'1269123353',
-    amount:'3200', createdate: new Date(Date.now()-30*86400000).toISOString(),
-    hs_v2_cumulative_time_in_1269123352: String(8*86400000),
-    hs_v2_cumulative_time_in_1269123353: String(3*86400000),
+  const deals=[{id:'d1',properties:{
+    dealname:'Giuliana – R1 Extensivo Direção 2026 – Aristo',
+    pipeline:'Aristo - Closers',dealstage:'1269123353',amount:'3200',createdate:t(30),
+    hs_v2_cumulative_time_in_1269123352:String(8*86400000),
+    hs_v2_cumulative_time_in_1269123353:String(3*86400000),
   }}];
-  const meetings = [{id:'m1', properties:{
+  const meetings=[{id:'m1',properties:{
     hs_meeting_title:'Sessão Estratégica – Giuliana',
-    hs_timestamp: new Date(Date.now()-3*86400000).toISOString(),
-    hs_meeting_start_time: new Date(Date.now()-3*86400000).toISOString(),
-    hs_createdate: new Date(Date.now()-5*86400000).toISOString(),
+    hs_timestamp:t(3),hs_meeting_start_time:t(3),hs_createdate:t(5),
     hs_meeting_outcome:'COMPLETED',
-    hubspot_owner_id:'12345678',
   }}];
-
-  render(contact, leads, deals, meetings, []);
+  render(contact,leads,deals,meetings,[]);
 }
 
-// ── RENDER ─────────────────────────────────────────────────────
-function render(contact, leads, deals, meetings, notes) {
-  const p = contact.properties || {};
+// ═══════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════
+function render(contact,leads,deals,meetings,notes){
+  const p=contact.properties||{};
 
-  // Current stage detection
-  const aristoLead = leads.find(l => {
-    const lp = l.properties || {};
-    return (lp.hs_pipeline||'').toLowerCase().includes('sdr aristo') ||
-           (lp.hs_lead_name||'').toUpperCase().includes('ARISTO') ||
-           (lp.hs_pipeline_stage||'') in LEAD_STAGES;
+  // find aristo lead & deal
+  const aristoLead=leads.find(l=>{
+    const lp=l.properties||{};
+    return(lp.hs_pipeline||'').toLowerCase().includes('aristo')||
+           LEAD_ORDER.includes(lp.hs_pipeline_stage||'');
   });
-  const aristoDeal = deals.find(d => {
-    const dp = d.properties || {};
-    return (dp.pipeline||'').toLowerCase().includes('aristo') ||
-           (dp.dealstage||'') in DEAL_STAGES;
+  const aristoDeal=deals.find(d=>{
+    const dp=d.properties||{};
+    return(dp.pipeline||'').toLowerCase().includes('aristo')||
+           DEAL_ORDER.includes(dp.dealstage||'');
   });
 
-  const leadStageId = aristoLead?.properties?.hs_pipeline_stage || null;
-  const dealStageId = aristoDeal?.properties?.dealstage || null;
+  const lp=aristoLead?.properties||{};
+  const dp=aristoDeal?.properties||{};
+  const leadStage=lp.hs_pipeline_stage||null;
+  const dealStage=dp.dealstage||null;
 
-  // Which pipeline is the lead currently active in?
-  // If deal exists (closer pipeline), show deal stage; else show lead stage
-  const currentPipeline = aristoDeal ? 'CLOSERS' : (aristoLead ? 'SDR' : null);
-  const currentStageId = aristoDeal ? dealStageId : leadStageId;
-  const currentStageName = aristoDeal
-    ? (DEAL_STAGES[dealStageId] || '—')
-    : (LEAD_STAGES[leadStageId] || '—');
+  const inClosers=!!aristoDeal;
+  const activeStageName=inClosers?(DEAL_STAGES[dealStage]||'—'):(LEAD_STAGES[leadStage]||'—');
+  const isLost=activeStageName==='Perdido';
+  const isWon=activeStageName==='Venda/Matrícula';
+  const hasAristo=isAristo(p,leads,deals);
 
-  // Time in current stage
-  const lp = aristoLead?.properties || {};
-  const dp = aristoDeal?.properties || {};
-  let currentStageTimeMs = null;
-  if (aristoDeal && dealStageId && DEAL_TIME_PROPS[dealStageId]) {
-    currentStageTimeMs = parseFloat(dp[DEAL_TIME_PROPS[dealStageId]]);
-  } else if (aristoLead && leadStageId && LEAD_TIME_PROPS[leadStageId]) {
-    currentStageTimeMs = parseFloat(lp[LEAD_TIME_PROPS[leadStageId]]);
+  let activeTimeMs=null;
+  if(inClosers&&dealStage&&DEAL_TIME_KEY[dealStage])activeTimeMs=parseFloat(dp[DEAL_TIME_KEY[dealStage]]);
+  else if(aristoLead&&leadStage&&LEAD_TIME_KEY[leadStage])activeTimeMs=parseFloat(lp[LEAD_TIME_KEY[leadStage]]);
+
+  // score
+  const raw=parseFloat(p.hs_predictivecontactscore_v2||0);
+  const score=raw>1?Math.min(Math.round(raw),999):Math.round(raw*100);
+  const pct=Math.min(raw>1?raw/10:raw*100,100);
+  const sc=pct>60?'#22c55e':pct>30?'#f5a623':'#ef4444';
+  const C=2*Math.PI*16;
+  const dash=C*(pct/100);
+  const tierMap={tier_1:['MUITO ALTO','pv1'],tier_2:['ALTO','pv2'],tier_3:['MÉDIO','pv3'],tier_4:['BAIXO','pv4']};
+  const[prioLbl,prioCls]=tierMap[p.hs_predictivescoringtier||'']||['—','pv4'];
+  const lcMap={lead:'Lead',marketingqualifiedlead:'MQL',salesqualifiedlead:'SQL',opportunity:'Oportunidade',customer:'Cliente',subscriber:'Assinante',other:'Outro'};
+
+  // stage props with value
+  const stageData=STAGE_PROPS.filter(s=>{
+    const v=lp[s.key];
+    return v&&v!=='null'&&v!=='undefined'&&v!=='';
+  });
+
+  function tempCls(v){
+    const u=(v||'').toLowerCase();
+    if(u.includes('quente'))return'hot';
+    if(u.includes('morn'))return'warm';
+    if(u.includes('frio'))return'cold';
+    return'';
   }
 
-  const isAristo = isAristoBrand(contact, leads, deals);
-  const isLost = currentStageName === 'Perdido';
-  const isWon = currentStageName === 'Venda/Matrícula';
+  // ─ LEFT CARD ────────────────────────────────────
+  const heroClass=isLost?'lost':isWon?'won':(hasAristo&&(leadStage||dealStage))?'':'none';
+  const pipeLabel=inClosers?'Closers Pipeline':'SDR Pipeline';
 
-  // Score
-  const rawScore = parseFloat(p.hs_predictivecontactscore_v2 || 0);
-  const score = rawScore > 1 ? Math.min(Math.round(rawScore), 999) : Math.round(rawScore * 100);
-  const scorePct = Math.min((rawScore > 1 ? rawScore/10 : rawScore * 100), 100);
-  const scoreColor = scorePct > 60 ? '#22c55e' : scorePct > 30 ? '#f5a623' : '#ef4444';
-  const circumference = 2 * Math.PI * 16;
-  const dash = circumference * (scorePct / 100);
-
-  // Priority tier
-  const tier = p.hs_predictivescoringtier || '';
-  const prioMap = {
-    'tier_1': ['MUITO ALTO', 'prio-very-high'],
-    'tier_2': ['ALTO', 'prio-high'],
-    'tier_3': ['MÉDIO', 'prio-medium'],
-    'tier_4': ['BAIXO', 'prio-low'],
-  };
-  const [prioLabel, prioClass] = prioMap[tier] || ['—', 'prio-low'];
-
-  // Lifecycle
-  const lcMap = {
-    'lead': 'Lead', 'marketingqualifiedlead': 'MQL', 'salesqualifiedlead': 'SQL',
-    'opportunity': 'Oportunidade', 'customer': 'Cliente', 'subscriber': 'Assinante',
-    'other': 'Outro',
-  };
-
-  // All stage-specific props from lead (show if has value)
-  const allLeadProps = aristoLead?.properties || {};
-  const stageProps = Object.values(STAGE_PROPS)
-    .map(sp => ({ label: sp.label, value: allLeadProps[sp.key] }))
-    .filter(sp => sp.value && sp.value !== 'null' && sp.value !== '');
-
-  // ── LEFT CARD HTML ─────────────────────────────────────────
-  const stageIndicatorClass = isLost ? 'lost' : isWon ? 'won' : '';
-  const pipelineLabel = currentPipeline === 'CLOSERS' ? 'Pipeline Closers' : 'SDR Pipeline';
-
-  const leftCard = `
+  const leftHTML=`
   <div class="left-card">
-    <div class="contact-header">
-      <div class="contact-top">
-        <div class="avatar">${getInitials(p.firstname, p.lastname) || '??'}</div>
-        <div class="contact-name-block">
-          <div class="contact-name">${p.firstname||''} ${p.lastname||''}</div>
-          <div class="contact-email">${p.email || '—'}</div>
+    <div class="ch">
+      <div class="ch-top">
+        <div class="avatar">${initials(p.firstname,p.lastname)||'?'}</div>
+        <div class="ch-info">
+          <div class="ch-name">${p.firstname||''} ${p.lastname||''}</div>
+          <div class="ch-email">${p.email||'—'}</div>
         </div>
-        ${tier ? `<span class="priority-badge ${prioClass}">${prioLabel}</span>` : ''}
+        ${p.hs_predictivescoringtier?`<span class="prio-badge ${prioCls}">${prioLbl}</span>`:''}
       </div>
       <div class="score-row">
-        <div class="score-ring-wrap">
+        <div class="ring-wrap">
           <svg width="44" height="44" viewBox="0 0 44 44">
-            <circle class="score-ring-bg" cx="22" cy="22" r="16"/>
-            <circle class="score-ring-fill" cx="22" cy="22" r="16"
-              stroke="${scoreColor}"
-              stroke-dasharray="${circumference}"
-              stroke-dashoffset="${circumference - dash}"/>
+            <circle class="ring-bg" cx="22" cy="22" r="16"/>
+            <circle class="ring-fill" cx="22" cy="22" r="16"
+              stroke="${sc}" stroke-dasharray="${C}" stroke-dashoffset="${C-dash}"/>
           </svg>
-          <div class="score-label" style="color:${scoreColor}">${score}%</div>
+          <div class="ring-lbl" style="color:${sc}">${score}%</div>
         </div>
-        <div class="score-meta">
-          <div class="score-title">Likelihood to Close</div>
-          <div class="score-value" style="color:${scoreColor}">${score}%</div>
-          <div class="score-sub">próximos 90 dias</div>
+        <div>
+          <div class="s-title">Likelihood to Close</div>
+          <div class="s-val" style="color:${sc}">${score}%</div>
+          <div class="s-sub">próximos 90 dias</div>
         </div>
       </div>
     </div>
 
-    ${isAristo && currentPipeline ? `
-    <div class="stage-indicator ${stageIndicatorClass}" style="margin:12px 16px 0;">
-      <div class="stage-indicator-header">
-        <div class="dot"></div>
-        <div class="pipeline-label">${pipelineLabel}</div>
+    ${hasAristo?`
+    <div class="stage-hero ${heroClass}">
+      <div class="sh-top">
+        <div class="sh-dot"></div>
+        <div class="sh-pipe">${pipeLabel}</div>
       </div>
-      <div class="stage-indicator-body">
-        <div class="stage-indicator-name">${currentStageName}</div>
-        <div class="stage-indicator-time">${currentStageTimeMs ? fmtDuration(currentStageTimeMs) + ' nesta etapa' : 'Tempo não disponível'}</div>
+      <div class="sh-body">
+        <div class="sh-name">${activeStageName}</div>
+        <div class="sh-time">${activeTimeMs?fmtMs(activeTimeMs)+' nesta etapa':'Tempo não disponível'}</div>
       </div>
-    </div>
-    ` : ''}
+    </div>`:''}
 
-    <div class="props-section" style="margin-top:12px;">
-      <div class="props-section-title">Informações</div>
-      ${row('Telefone', p.phone)}
-      ${row('Lifecycle', lcMap[p.lifecyclestage] || p.lifecyclestage)}
-      ${row('Lead Status', p.lead_status)}
-      ${row('Último Form.', p.nome_do_ultimo_formulario)}
-      ${row('Fonte', p.hs_analytics_source)}
-      ${row('Criado em', fmtDate(p.createdate))}
-      ${row('Últ. atividade', fmtDate(p.notes_last_updated))}
-      ${row('Negócios', p.num_associated_deals)}
-    </div>
-
-    ${stageProps.length ? `
-    <div class="props-section">
-      <div class="props-section-title">Dados da Etapa</div>
-      ${stageProps.map(sp => row(sp.label, sp.value)).join('')}
-    </div>` : ''}
-
-    <div class="props-section">
-      <div class="props-section-title">Engajamento Email</div>
-      ${row('Abertos', p.hs_email_open)}
-      ${row('Clicados', p.hs_email_click)}
-      ${row('Respondidos', p.hs_email_replied)}
+    <div class="section-block" style="margin-top:${hasAristo?'4':'12'}px">
+      <div class="section-block-title">Informações</div>
+      ${row('Telefone',p.phone)}
+      ${row('Lifecycle',lcMap[p.lifecyclestage]||p.lifecyclestage)}
+      ${row('Lead Status',p.lead_status)}
+      ${row('Último Form.',p.nome_do_ultimo_formulario)}
+      ${row('Fonte',p.hs_analytics_source)}
+      ${row('Criado em',fmtDate(p.createdate))}
+      ${row('Últ. atividade',fmtDate(p.notes_last_updated))}
+      ${row('Negócios',p.num_associated_deals)}
     </div>
 
-    ${(p.grupo_primum || detectBrand(p.nome_do_ultimo_formulario) !== 'OUTRO') ? `
-    <div class="brand-chips">
-      ${p.grupo_primum ? `<span class="brand-chip">${p.grupo_primum}</span>` : ''}
-      ${p.hs_predictivescoringtier ? `<span class="brand-label-chip">${prioLabel}</span>` : ''}
-    </div>` : ''}
+    ${stageData.length?`
+    <div class="section-block">
+      <div class="section-block-title">Dados da Etapa</div>
+      ${stageData.map(s=>row(s.label,lp[s.key],s.key==='temperatura_do_lead'?tempCls(lp[s.key]):'')).join('')}
+    </div>`:''}
+
+    ${(p.hs_email_open&&p.hs_email_open!=='0')?`
+    <div class="section-block">
+      <div class="section-block-title">Engajamento Email</div>
+      ${row('Abertos',p.hs_email_open)}
+      ${row('Clicados',p.hs_email_click)}
+      ${row('Respondidos',p.hs_email_replied)}
+    </div>`:''}
+
+    ${p.grupo_primum?`<div class="brand-chips">
+      <span class="bchip">${p.grupo_primum}</span>
+      ${p.hs_predictivescoringtier?`<span class="blabel">${prioLbl}</span>`:''}
+    </div>`:''}
   </div>`;
 
-  // ── ARISTO PIPELINE ────────────────────────────────────────
-  const aristoJourney = isAristo ? buildAristoJourney(aristoLead, aristoDeal, lp, dp) : '';
-
-  // ── CURSOS ──────────────────────────────────────────────────
-  const coursesHtml = buildCourses(contact, leads, deals, notes);
-
-  // ── REUNIÕES ─────────────────────────────────────────────────
-  const meetingsHtml = buildMeetings(meetings);
-
-  // ── TIMELINE ─────────────────────────────────────────────────
-  const timelineHtml = buildTimeline(notes);
-
-  document.getElementById('mainContent').innerHTML = `
-  <div class="layout">
-    ${leftCard}
-    <div class="right-col">
-      ${aristoJourney}
-      ${coursesHtml}
-      ${meetingsHtml}
-      ${timelineHtml}
-    </div>
-  </div>`;
-
-  document.getElementById('searchBar').value = contact.id;
-}
-
-function row(label, value) {
-  if (!value || value === 'null' || value === '0' || value === 'undefined') return '';
-  return `<div class="prop-row">
-    <span class="prop-key">${label}</span>
-    <span class="prop-val">${value}</span>
-  </div>`;
-}
-
-// ── ARISTO JOURNEY ─────────────────────────────────────────────
-function buildAristoJourney(aristoLead, aristoDeal, lp, dp) {
-  const leadStageId = aristoLead?.properties?.hs_pipeline_stage || null;
-  const dealStageId = aristoDeal?.properties?.dealstage || null;
-
-  function stepStatus(stageId, currentId, stageOrder, isLostStage) {
-    if (isLostStage && currentId === stageId) return 'lost';
-    if (stageId === '1269225336' && currentId === stageId) return 'won';
-    if (currentId === stageId) return 'current';
-    const ci = stageOrder.indexOf(currentId);
-    const si = stageOrder.indexOf(stageId);
-    if (ci === -1) return 'future';
-    if (si < ci) return 'done';
-    return 'future';
+  // ─ PIPELINE ─────────────────────────────────────
+  function stepStatus(sid,currentId,order,lostId){
+    if(sid===lostId&&currentId===sid)return'lost';
+    if(sid==='1269225336'&&currentId===sid)return'won';
+    if(currentId===sid)return'current';
+    const ci=order.indexOf(currentId),si=order.indexOf(sid);
+    if(ci===-1)return'future';
+    return si<ci?'done':'future';
   }
-
-  function buildSteps(stageOrder, stageNames, currentId, timeProps, props, lostId) {
-    return stageOrder.map(sid => {
-      const status = stepStatus(sid, currentId, stageOrder, sid === lostId);
-      const timeProp = timeProps[sid];
-      const timeMs = timeProp ? parseFloat(props[timeProp]) : null;
-      const timeStr = fmtDuration(timeMs);
-      const icon = status === 'done' ? '✓'
-        : status === 'lost' ? '✕'
-        : status === 'won' ? '★'
-        : status === 'current' ? '◉'
-        : '○';
-      return `<div class="step ${status}">
-        <div class="tl-line"></div>
-        <div class="step-circle">${icon}</div>
-        <div class="step-name">${stageNames[sid]}</div>
-        ${timeStr ? `<div class="step-time">${timeStr}</div>` : '<div class="step-time"></div>'}
+  function buildSteps(order,names,currentId,timeKeys,props,lostId){
+    return order.map(sid=>{
+      const st=stepStatus(sid,currentId,order,lostId);
+      const ms=timeKeys[sid]?parseFloat(props[timeKeys[sid]]):null;
+      const t=fmtMs(ms);
+      const icon={done:'✓',lost:'✕',won:'★',current:'◉',future:'○'}[st];
+      return`<div class="step ${st}">
+        <div class="step-dot">${icon}</div>
+        <div class="step-name">${names[sid]}</div>
+        <div class="step-time">${t||''}</div>
       </div>`;
     }).join('');
   }
 
-  const sdrSteps = buildSteps(
-    LEAD_STAGE_ORDER,
-    LEAD_STAGES,
-    leadStageId,
-    LEAD_TIME_PROPS,
-    lp,
-    '1269320048'
-  );
-  const closerSteps = buildSteps(
-    DEAL_STAGE_ORDER,
-    DEAL_STAGES,
-    dealStageId,
-    DEAL_TIME_PROPS,
-    dp,
-    '1269225337'
-  );
-
-  // Check if lead is in closers (has deal)
-  const inClosers = !!aristoDeal;
-
-  return `<div class="section-card">
-    <div class="section-header">
-      <div class="section-icon" style="background:var(--aristo-bg)">🏆</div>
-      <div class="section-title">Jornada Aristo</div>
+  const journeyHTML=hasAristo?`
+  <div class="scard">
+    <div class="shead">
+      <div class="sicon" style="background:var(--aristo-bg)">🏆</div>
+      <div class="stitle">Jornada Aristo</div>
     </div>
-    <div class="pipeline-block">
-      <div class="pipeline-label">SDR Pipeline</div>
-      <div class="pipeline-steps">${sdrSteps}</div>
+    <div class="pipeline-wrap">
+      <div class="pipe-label">SDR Pipeline</div>
+      <div class="steps">${buildSteps(LEAD_ORDER,LEAD_STAGES,leadStage,LEAD_TIME_KEY,lp,'1269320048')}</div>
     </div>
-    ${inClosers ? `
-    <div class="pipeline-divider">
-      <div class="pipeline-divider-arrow"></div>
-      <span>→ Closers</span>
-      <div class="pipeline-divider-arrow"></div>
+    <div class="pipe-divider">
+      <div class="pipe-div-line"></div>
+      <span style="white-space:nowrap;font-size:10px">→ Closers</span>
+      <div class="pipe-div-line"></div>
     </div>
-    <div class="pipeline-block">
-      <div class="pipeline-label">Closers Pipeline</div>
-      <div class="pipeline-steps">${closerSteps}</div>
-    </div>` : `
-    <div class="pipeline-block" style="opacity:.3;padding-top:0;">
-      <div class="pipeline-label">Closers Pipeline</div>
-      <div class="pipeline-steps">${closerSteps}</div>
-    </div>`}
-  </div>`;
-}
+    <div class="pipeline-wrap ${inClosers?'':'closers-inactive'}">
+      <div class="pipe-label">Closers Pipeline</div>
+      <div class="steps">${buildSteps(DEAL_ORDER,DEAL_STAGES,dealStage,DEAL_TIME_KEY,dp,'1269225337')}</div>
+    </div>
+  </div>`:'';
 
-// ── CURSOS ─────────────────────────────────────────────────────
-function buildCourses(contact, leads, deals, notes) {
-  const p = contact.properties || {};
-  const courses = [];
-  const seen = new Set();
-
-  function add(name, brandKey, date, source) {
-    const k = name.toLowerCase().replace(/\s+/g,'');
-    if (seen.has(k)) return;
-    seen.add(k);
-    courses.push({ name, brandKey, date, source });
+  // ─ COURSES ──────────────────────────────────────
+  const courses=[];const seen=new Set();
+  function addC(name,brand,date,src){
+    const k=(name||'').toLowerCase().replace(/\s+/g,'');
+    if(!k||seen.has(k))return;seen.add(k);courses.push({name,brand,date,src});
   }
+  if(p.produtos_primum)addC(p.produtos_primum,detectBrand(p.produtos_primum),p.createdate,'Produto Atual');
+  leads.forEach(l=>{const lp2=l.properties||{};if(lp2.hs_lead_name)addC(lp2.hs_lead_name,detectBrand(lp2.hs_lead_name),lp2.createdate,'Lead');});
+  deals.forEach(d=>{const dp2=d.properties||{};if(dp2.dealname)addC(dp2.dealname,detectBrand(dp2.dealname),dp2.createdate,'Negócio');});
+  if(p.nome_do_ultimo_formulario)addC(p.nome_do_ultimo_formulario,detectBrand(p.nome_do_ultimo_formulario),p.notes_last_updated,'Formulário');
 
-  // From produtos_primum name (if we have it as text)
-  if (p.produtos_primum) add(p.produtos_primum, detectBrand(p.produtos_primum), p.createdate, 'Produto Atual');
-
-  // From leads
-  for (const l of leads) {
-    const lp = l.properties || {};
-    if (lp.hs_lead_name) add(lp.hs_lead_name, detectBrand(lp.hs_lead_name), lp.createdate, 'Lead');
-  }
-
-  // From deals
-  for (const d of deals) {
-    const dp = d.properties || {};
-    if (dp.dealname) add(dp.dealname, detectBrand(dp.dealname), dp.createdate, 'Negócio');
-  }
-
-  // From last form
-  if (p.nome_do_ultimo_formulario) {
-    add(p.nome_do_ultimo_formulario, detectBrand(p.nome_do_ultimo_formulario), p.notes_last_updated, 'Formulário');
-  }
-
-  if (!courses.length) return `<div class="section-card">
-    <div class="section-header">
-      <div class="section-icon" style="background:var(--purple-bg)">🎓</div>
-      <div class="section-title">Cursos de Interesse</div>
-    </div>
-    <div class="empty-msg">Nenhum curso identificado</div>
-  </div>`;
-
-  return `<div class="section-card">
-    <div class="section-header">
-      <div class="section-icon" style="background:var(--purple-bg)">🎓</div>
-      <div class="section-title">Cursos de Interesse</div>
-      <div class="section-count">${courses.length}</div>
-    </div>
-    <div class="courses-grid">
-      ${courses.map(c => {
-        const br = BRANDS[c.brandKey] || BRANDS.OUTRO;
-        const tagColors = {
-          'Produto Atual': { bg:'rgba(34,197,94,.1)', color:'#22c55e', border:'rgba(34,197,94,.2)' },
-          'Lead': { bg:'rgba(245,166,35,.1)', color:'#f5a623', border:'rgba(245,166,35,.2)' },
-          'Negócio': { bg:'rgba(56,189,248,.1)', color:'#38bdf8', border:'rgba(56,189,248,.2)' },
-          'Formulário': { bg:'rgba(167,139,250,.1)', color:'#a78bfa', border:'rgba(167,139,250,.2)' },
-        };
-        const tc = tagColors[c.source] || tagColors['Formulário'];
-        return `<div class="course-card" style="border-color:${br.color}22">
-          <div class="course-top-bar" style="background:${br.color}"></div>
-          <div class="course-brand" style="color:${br.color}">${br.label}</div>
-          <div class="course-name">${c.name}</div>
-          ${c.date ? `<div class="course-date">${fmtDate(c.date)}</div>` : ''}
-          <span class="course-tag" style="background:${tc.bg};color:${tc.color};border:1px solid ${tc.border}">${c.source}</span>
-        </div>`;
-      }).join('')}
-    </div>
-  </div>`;
-}
-
-// ── REUNIÕES ───────────────────────────────────────────────────
-function buildMeetings(meetings) {
-  if (!meetings || !meetings.length) return `<div class="section-card">
-    <div class="section-header">
-      <div class="section-icon" style="background:var(--info-bg)">📅</div>
-      <div class="section-title">Reuniões</div>
-    </div>
-    <div class="empty-msg">Nenhuma reunião encontrada</div>
-  </div>`;
-
-  const sorted = [...meetings].sort((a,b) => {
-    const ta = new Date(a.properties?.hs_timestamp || a.properties?.hs_createdate || 0);
-    const tb = new Date(b.properties?.hs_timestamp || b.properties?.hs_createdate || 0);
-    return tb - ta;
-  });
-
-  const outcomeMap = {
-    'COMPLETED': { label: 'Realizada', color: '#22c55e', bg: 'rgba(34,197,94,.1)' },
-    'NO_SHOW': { label: 'No-show', color: '#ef4444', bg: 'rgba(239,68,68,.1)' },
-    'CANCELED': { label: 'Cancelada', color: '#f5a623', bg: 'rgba(245,166,35,.1)' },
-    'RESCHEDULED': { label: 'Reagendada', color: '#38bdf8', bg: 'rgba(56,189,248,.1)' },
+  const tagS={
+    'Produto Atual':'background:rgba(34,197,94,.1);color:#22c55e;border:1px solid rgba(34,197,94,.25)',
+    'Lead':         'background:var(--aristo-bg);color:var(--aristo);border:1px solid var(--aristo-bd)',
+    'Negócio':      'background:var(--blue-bg);color:var(--blue);border:1px solid rgba(56,189,248,.25)',
+    'Formulário':   'background:var(--purple-bg);color:var(--purple);border:1px solid rgba(167,139,250,.25)',
   };
-
-  return `<div class="section-card">
-    <div class="section-header">
-      <div class="section-icon" style="background:var(--info-bg)">📅</div>
-      <div class="section-title">Reuniões</div>
-      <div class="section-count">${sorted.length}</div>
+  const coursesHTML=`<div class="scard">
+    <div class="shead">
+      <div class="sicon" style="background:var(--purple-bg)">🎓</div>
+      <div class="stitle">Cursos de Interesse</div>
+      ${courses.length?`<div class="scnt">${courses.length}</div>`:''}
     </div>
-    <div class="meetings-list">
-      ${sorted.map(m => {
-        const mp = m.properties || {};
-        const outcome = outcomeMap[mp.hs_meeting_outcome] || null;
-        const meetingDate = mp.hs_timestamp || mp.hs_meeting_start_time;
-        const scheduledDate = mp.hs_createdate;
-        return `<div class="meeting-item">
-          <div class="meeting-icon">📌</div>
-          <div class="meeting-content">
-            <div class="meeting-top">
-              <div class="meeting-title">${mp.hs_meeting_title || 'Reunião sem título'}</div>
-              ${outcome ? `<span class="meeting-outcome" style="color:${outcome.color};background:${outcome.bg};border-color:${outcome.color}33">${outcome.label}</span>` : ''}
-            </div>
-            <div class="meeting-meta">
-              ${meetingDate ? `<span>📅 ${fmtDate(meetingDate)} ${fmtTime(meetingDate)}</span>` : ''}
-              ${scheduledDate ? `<span>🗓 Agendada: ${fmtDate(scheduledDate)}</span>` : ''}
-              ${mp.hubspot_owner_id ? `<span>👤 Mayara</span>` : ''}
-            </div>
-          </div>
-        </div>`;
-      }).join('')}
-    </div>
+    ${courses.length
+      ?`<div class="courses-grid">${courses.map(c=>{const br=BRANDS[c.brand]||BRANDS.OUTRO;const ts=tagS[c.src]||tagS['Formulário'];return`<div class="course-card" style="border-color:${br.color}22"><div class="cc-bar" style="background:${br.color}"></div><div class="cc-brand" style="color:${br.color}">${br.label}</div><div class="cc-name">${c.name}</div>${c.date?`<div class="cc-date">${fmtDate(c.date)}</div>`:''}<span class="tag" style="${ts}">${c.src}</span></div>`;}).join('')}</div>`
+      :`<div class="empty">Nenhum curso identificado</div>`}
   </div>`;
-}
 
-// ── TIMELINE ───────────────────────────────────────────────────
-function buildTimeline(notes) {
-  const items = [];
-
-  for (const n of notes.slice(0, 20)) {
-    const np = n.properties || {};
-    const body = np.hs_note_body || np.hs_body_preview || '';
-    if (!body) continue;
-    const brand = detectBrand(body);
-    const isForm = body.toLowerCase().includes('enviou') || body.toLowerCase().includes('preencheu');
-    items.push({
-      icon: isForm ? '📝' : '💬',
-      title: body.substring(0, 80) + (body.length > 80 ? '…' : ''),
-      date: np.hs_timestamp,
-      tag: isForm ? 'Formulário' : 'Nota',
-      brand,
-    });
-  }
-
-  if (!items.length) return '';
-
-  const br_colors = Object.fromEntries(Object.entries(BRANDS).map(([k,v])=>[k,v.color]));
-
-  return `<div class="section-card">
-    <div class="section-header">
-      <div class="section-icon" style="background:rgba(107,114,128,.1)">⏱</div>
-      <div class="section-title">Atividades Recentes</div>
-      <div class="section-count">${items.length}</div>
+  // ─ MEETINGS ─────────────────────────────────────
+  const sortedM=[...meetings].sort((a,b)=>new Date(b.properties?.hs_timestamp||0)-new Date(a.properties?.hs_timestamp||0));
+  const ocMap={
+    COMPLETED:  {lbl:'Realizada',  c:'#22c55e',bg:'rgba(34,197,94,.1)' },
+    NO_SHOW:    {lbl:'No-show',    c:'#ef4444',bg:'rgba(239,68,68,.1)' },
+    CANCELED:   {lbl:'Cancelada',  c:'#f5a623',bg:'rgba(245,166,35,.1)'},
+    RESCHEDULED:{lbl:'Reagendada', c:'#38bdf8',bg:'rgba(56,189,248,.1)'},
+  };
+  const meetingsHTML=`<div class="scard">
+    <div class="shead">
+      <div class="sicon" style="background:var(--blue-bg)">📅</div>
+      <div class="stitle">Reuniões</div>
+      ${sortedM.length?`<div class="scnt">${sortedM.length}</div>`:''}
     </div>
-    <div class="timeline">
-      ${items.map((it,i) => {
-        const c = br_colors[it.brand] || '#6b7280';
-        return `<div class="tl-item">
-          ${i < items.length-1 ? '<div class="tl-line"></div>' : ''}
-          <div class="tl-dot">${it.icon}</div>
-          <div class="tl-body">
-            <div class="tl-title">${it.title}</div>
-            <div class="tl-date">${fmtDate(it.date)}</div>
-            <span class="tl-tag" style="background:${c}15;color:${c};border:1px solid ${c}30">${it.tag}</span>
-          </div>
-        </div>`;
-      }).join('')}
+    ${sortedM.length
+      ?`<div class="meetings-list">${sortedM.map(m=>{const mp=m.properties||{};const oc=ocMap[mp.hs_meeting_outcome]||null;const mDate=mp.hs_timestamp||mp.hs_meeting_start_time;return`<div class="meeting-row"><div class="mi-icon">📌</div><div class="mi-body"><div class="mi-top"><div class="mi-title">${mp.hs_meeting_title||'Reunião sem título'}</div>${oc?`<span class="mi-outcome" style="color:${oc.c};background:${oc.bg};border-color:${oc.c}44">${oc.lbl}</span>`:''}</div><div class="mi-meta">${mDate?`<span>📅 ${fmtDate(mDate)} ${fmtTime(mDate)}</span>`:''}<span>🗓 Agendada: ${fmtDate(mp.hs_createdate)}</span><span>👤 Mayara</span></div></div></div>`;}).join('')}</div>`
+      :`<div class="empty">Nenhuma reunião encontrada</div>`}
+  </div>`;
+
+  // ─ TIMELINE ─────────────────────────────────────
+  const tlItems=notes.filter(n=>(n.properties?.hs_note_body||n.properties?.hs_body_preview||'').trim().length>10).slice(0,20);
+  const timelineHTML=tlItems.length?`<div class="scard">
+    <div class="shead">
+      <div class="sicon" style="background:rgba(107,114,128,.1)">⏱</div>
+      <div class="stitle">Atividades Recentes</div>
+      <div class="scnt">${tlItems.length}</div>
+    </div>
+    <div class="timeline-wrap">
+      ${tlItems.map((n,i)=>{const np=n.properties||{};const body=np.hs_note_body||np.hs_body_preview||'';const br=BRANDS[detectBrand(body)]||BRANDS.OUTRO;const isForm=body.toLowerCase().includes('enviou')||body.toLowerCase().includes('preencheu');return`<div class="tl-item">${i<tlItems.length-1?'<div class="tl-line"></div>':''}<div class="tl-dot">${isForm?'📝':'💬'}</div><div class="tl-body"><div class="tl-title">${body.substring(0,90)}${body.length>90?'…':''}</div><div class="tl-date">${fmtDate(np.hs_timestamp)}</div><span class="tag" style="background:${br.bg};color:${br.color};border:1px solid ${br.color}30;margin-top:4px">${isForm?'Formulário':'Nota'}</span></div></div>`;}).join('')}
+    </div>
+  </div>`:'';
+
+  // ─ ASSEMBLE ─────────────────────────────────────
+  document.getElementById('content').innerHTML=`
+  <div class="layout">
+    ${leftHTML}
+    <div class="right-col">
+      ${journeyHTML}
+      ${coursesHTML}
+      ${meetingsHTML}
+      ${timelineHTML}
     </div>
   </div>`;
 }
