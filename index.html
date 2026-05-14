@@ -217,13 +217,47 @@
   .stage-hero.won  .sh-name{color:var(--success);}
   .sh-time{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px;}
   .sh-time::before{content:'⏱';font-size:10px;}
-  /* current dot inside pipeline */
+  /* current dot + time badge inside pipeline */
   .aristo-current-dot{width:7px;height:7px;border-radius:50%;background:var(--success);box-shadow:0 0 6px var(--success);animation:shglow2 2s infinite;flex-shrink:0;}
   @keyframes shglow2{0%,100%{box-shadow:0 0 4px var(--success)}50%{box-shadow:0 0 10px var(--success),0 0 20px rgba(92,240,160,.2)}}
-  /* time badge inside pipeline stage */
   .aristo-stage-time-badge{font-size:9px;color:var(--muted);margin-left:auto;font-family:'DM Mono',monospace;flex-shrink:0;}
   .aristo-stage.done    .aristo-stage-time-badge{color:rgba(124,106,247,.75);}
   .aristo-stage.current .aristo-stage-time-badge{color:rgba(247,201,72,.85);}
+
+  /* COLLAPSIBLE SECTION */
+  .section-header.collapsible{cursor:pointer;user-select:none;}
+  .section-header.collapsible:hover{background:rgba(255,255,255,.02);}
+  .collapse-arrow{font-size:12px;color:var(--muted);transition:transform .25s;flex-shrink:0;}
+  .collapsed .collapse-arrow{transform:rotate(-90deg);}
+  .collapsible-body{overflow:hidden;max-height:2000px;transition:max-height .35s ease;}
+  .collapsed .collapsible-body{max-height:0;}
+
+  /* ENGAGEMENT REDESIGN */
+  .eng-section{padding:0;}
+  .eng-month{padding:10px 20px 0;}
+  .eng-month-label{font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+  .eng-form-item{padding:10px 20px;border-bottom:1px solid var(--border);transition:background .15s;}
+  .eng-form-item:hover{background:rgba(255,255,255,.02);}
+  .eng-form-header{display:flex;align-items:flex-start;gap:10px;}
+  .eng-form-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;background:rgba(124,106,247,.12);}
+  .eng-form-meta{flex:1;}
+  .eng-form-title{font-size:12px;font-weight:600;line-height:1.4;margin-bottom:2px;}
+  .eng-form-sub{font-size:11px;color:var(--muted);line-height:1.4;}
+  .eng-form-date{font-size:10px;color:var(--muted);flex-shrink:0;padding-top:2px;}
+  .eng-form-fields{margin-top:8px;background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+  .eng-ff-item{display:flex;flex-direction:column;gap:2px;}
+  .eng-ff-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;}
+  .eng-ff-value{font-size:11px;font-weight:500;word-break:break-word;}
+  .eng-page-item{display:flex;align-items:center;gap:10px;padding:8px 20px;border-bottom:1px solid var(--border);font-size:12px;}
+  .eng-page-item:last-child{border-bottom:none;}
+  .eng-page-icon{font-size:12px;flex-shrink:0;color:var(--muted);}
+  .eng-page-url{flex:1;color:var(--accent2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .eng-page-count{font-size:10px;color:var(--muted);flex-shrink:0;}
+  .eng-stats-row{display:flex;gap:0;border-bottom:1px solid var(--border);}
+  .eng-stat{flex:1;padding:14px 20px;text-align:center;border-right:1px solid var(--border);}
+  .eng-stat:last-child{border-right:none;}
+  .eng-stat-val{font-size:20px;font-weight:700;margin-bottom:2px;}
+  .eng-stat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;}
 
   /* MEETINGS */
   .meetings-list{padding:8px 0;}
@@ -315,6 +349,25 @@
 <script>
 const PROXY = 'https://primum-proxy.vinicius-reis.workers.dev';
 const ACCESS_HASH = '45f48424';
+
+// Mapeamento ID → nome do produto
+const PRODUTOS_MAP = {
+  '1679426378':'Preparação para Processos Seletivos','1728563445':'MBA em Negociação de Alto Impacto','1728563455':'MBA em Negociação de Alto Impacto - À vista','1728563458':'MBA em Soft Skills','1728563471':'MBA em Soft Skills - À vista','1728563474':'MBA Executivo em Gestão de Negócios','1728563486':'MBA Executivo em Liderança Exponencial','1728563497':'MBA Executivo em Liderança Exponencial - À vista','1728563511':'MBA Jr em Gestão de Dados - À vista','1728563514':'MBA Jr em Gestão Híbrida de Projetos','1728563525':'MBA Jr em Gestão Híbrida de Projetos - À vista','1728563528':'MBA Jr em Negociação de Alto Impacto','1728563539':'MBA Jr em Negociação de Alto Impacto - À vista','1728563542':'MBA Jr Soft Skills','1728563553':'MBA Jr Soft Skills - À vista','1728563556':'MBA Jr. Burnout','1728563566':'MBA Jr. Burnout - À vista','1728563569':'MBA Jr. em Diversidade e Inclusão 4.0','1728563582':'MBA Jr. em ESG de Alto Impacto','1728563593':'MBA Jr. em ESG de Alto Impacto - À vista','1728563596':'MBA Jr. em Gestão de Produto','1728563606':'MBA Jr. em Gestão de Produto - À vista','1728563639':'Pós-graduação em Gestão de Negócios','1728563651':'Pós-graduação em Gestão de Negócios - À vista','1728563654':'Pós-graduação em Gestão de Produto','1728563666':'Pós-graduação em Gestão de Produto - À vista','1732891107':'Programa de Aceleração de Carreiras','1732891592':'Programa de Aceleração de Carreiras - À Vista','1732893239':'MBA Liderança + PAC - À Vista','1732894456':'MBA em Liderança e Gestão','1732901438':'MBA em Inovação e Gestão em Saúde','1732901780':'MBA em Criação e Gestão de Produtos Inovadores','1732901869':'MBA em Finanças ESG e Economia Verde','1732902003':'MBA em Gestão de Projetos de Alta Complexidade','1732902064':'MBA em Negociação Profissional e Gestão de Conflitos','1732902300':'MBA em Gestão Estratégica de Dados','1732904097':'MBA Negociação + PAC - à vista','1732917784':'Programa de Aceleração de Carreiras - Parcelado',
+  '1721158718':'MedQ - Assinatura Semestral','1721158774':'MedQ - Assinatura Mensal','1721158791':'MedQ - Assinatura Anual','1721158931':'MedQ - Trial','1721915804':'Mentoria Individual MedQ','1732903687':'MedQ Até a aprovação','1736803699':'MedQ - Corporativo','1741638711':'Negociação especial MedQ','1754461544':'MedQ - Sprint 80/20',
+  '1743199436':'Imersão em Toxina Botulínica','1743199939':'Imersão em Preenchimentos Faciais','1743200104':'Imersão em Procedimentos Faciais Minimamente Invasivos','1743442707':'Pós-graduação em Dermatologia pediátrica','1743443346':'Pós-graduação em Dermatologia','1743443636':'Pós-graduação em Cirurgia Dermatológica','1743443990':'Pós-graduação em Medicina Estética','1743444318':'Pós-graduação em Tricologia Médica','1743444724':'Pós-graduação em Nutrologia Esportiva','1743444994':'Pós-graduação em Medicina Integrativa','1743445307':'Pós-graduação em Nutrologia','1743445679':'Pós-graduação em Endocrinologia','1743445978':'Pós-graduação em Psiquiatria','1743446292':'Pós-graduação em Psiquiatria Infância e Adolescência','1743446720':'Pós-graduação em Dependência Química','1743447995':'R3 em Endocrinologia',
+  '1723212876':'R1 Intensivo','1723213321':'Revalidação Extensivo','1723213344':'Revalidação Programado','1725283877':'Sprint 80/20 - Unitário','1725284453':'Sprint 80/20 - Pacote 05 Sprints','1725284596':'Sprint 80/20 - Acesso Completo','1725394687':'Curso Prático','1725909791':'Sprint 80/20 - Unitário 3X','1725971747':'Curso Prático - 12X','1725988091':'Sprint 80/20 - Pacote 03 Sprints','1727960094':'R1 Extensivo Programado 2025/2026','1728388039':'R1 Extensivo 2025 Renovação','1728507313':'Curso de ECG para Médicos','1730488980':'R1 Extensivo Programado 2023/2024','1732625402':'R1 Extensivo Tradicional Até Aprovação 2025','1732626305':'R1 Extensivo até Aprovação 2025','1732629303':'R1 Extensivo Programado Até Aprovação 2025/2026','1736446988':'R1 Extensivo Tradicional Até a Aprovação Renovação','1736527979':'R1 Extensivo 2025','1736539841':'R1 Extensivo Programado Até a Aprovação Renovação','1737633624':'R1 Extensivo 2024 - Segunda Parcela','1740421807':'Aristo TED','1740429428':'Sprint 80/20 INEP Revalida','1741294793':'Mentoria Individual','1741295551':'Mentoria Individual ELITE','1744126795':'Aristo - Custo Institucional','1747248288':'Intensivo Revalidação','1747257509':'Intensivo Revalidação','1748129821':'Intensivo Revalidação','1752151970':'R1 Programado Estendido','1752672504':'Missão Enamed','1752702599':'R1 Garantido','1753219186':'R1 Extensivo Estendido','1754429486':'Simulado + Sessão estratégica','1754595988':'Revalidação Extensivo','1755778287':'Renegociação - Aristo','1756225980':'Intensivo Revalidação UPAP','1756226360':'Revalidação Programado - UPAP','1756226489':'Revalidação Extensivo - UPAP','1757017562':'Renegociação - Aristo à vista','1757607558':'Curso Medicina Baseada em Evidências','1757621817':'Antibioticoterapia ATB','1767709243':'R1 Extensivo Direção 2026','1767709382':'R1 Extensivo Performance 2026','1761604267':'R1 Extensivo 2026 Renovação','1762181017':'R1 Extensivo 2026','1762377292':'R1 Intensivo 2026','1762184270':'R1 Programado 2026/2027','1763578398':'R1 Programado Ampliado','1764021112':'R1 Extensivo 2026 2 Ciclos','1764021812':'R1 Programado 2026/2027 3 ciclos','1764075817':'R1 Extensivo 2026 Flex','1764076324':'R1 Programado 2026/2027 Flex','1765285451':'R1 Extensivo 2026 Garantia 50%','1765551789':'R1 Extensivo 2026 Renovação Garantia 50%','1765552080':'R1 Programado 2026/2027 Garantia 50%',
+};
+
+function resolveProductName(val){
+  if(!val)return null;
+  // May be "Nome, ID" or just ID or just name
+  const parts=val.split(',').map(s=>s.trim());
+  const results=parts.map(p=>{
+    const id=p.replace(/\D/g,'');
+    return PRODUTOS_MAP[id]||PRODUTOS_MAP[p]||p;
+  });
+  return results.filter(Boolean).join(' · ');
+}
 
 const BRANDS = {
   BWS:   {color:'#7c6af7',bg:'rgba(124,106,247,.12)',label:'BWS'},
@@ -521,7 +574,7 @@ function render(contact,activities,leads,deals,meetings){
           <div class="score-number" style="color:${scoreColor}">${score}%</div>
         </div>
         <div class="score-info">
-          <div class="score-label">Likelihood to Close</div>
+          <div class="score-label">Probabilidade de Fechamento</div>
           <div class="score-value" style="color:${scoreColor}">${score}%</div>
           <div class="score-sub">próximos 90 dias</div>
         </div>
@@ -536,8 +589,7 @@ function render(contact,activities,leads,deals,meetings){
         const DL_NAMES={'1269123352':'Sessão Estratégica','1269123353':'Pós-Sessão','1269225336':'Venda/Matrícula','1269225337':'Perdido'};
         const stageName=inClosers?(DL_NAMES[dealStageId]||dealStageId||'—'):(SDR_NAMES[sdrStageId]||sdrStageId||'—');
         const pipeLabel=inClosers?'Closers Pipeline':'SDR Pipeline';
-        const isLost=stageName==='Perdido';
-        const isWon=stageName==='Venda/Matrícula';
+        const isLost=stageName==='Perdido';const isWon=stageName==='Venda/Matrícula';
         const heroClass=isLost?'lost':isWon?'won':'';
         const LEAD_TKEY={'1087683153':'hs_v2_cumulative_time_in_1087683153','1087683154':'hs_v2_cumulative_time_in_1087683154','1087683156':'hs_v2_cumulative_time_in_1087683156'};
         const DEAL_TKEY={'1269123352':'hs_v2_cumulative_time_in_1269123352','1269123353':'hs_v2_cumulative_time_in_1269123353'};
@@ -559,6 +611,7 @@ function render(contact,activities,leads,deals,meetings){
         ${propRow('Lifecycle',lcLabel(p.lifecyclestage))}
         ${propRow('Lead Status',lsLabel(p.hs_lead_status))}
         ${propRow('Último Form.',p.nome_do_ultimo_formulario,true)}
+        ${propRow('Produto',resolveProductName(p.produtos_primum),true)}
         ${propRow('Fonte',srcLabel(p.hs_latest_source))}
         ${propRow('Criado em',fmtDate(p.createdate))}
         ${propRow('Últ. atividade',fmtDate(p.notes_last_updated))}
@@ -576,19 +629,21 @@ function render(contact,activities,leads,deals,meetings){
             ['Produto pretendido',lp_side.aristo_produto_pretendido],
           ].filter(r=>r[1]).map(r=>propRow(r[0],r[1])).join('')}
         </div>`:'' }
-      ${isAristo&&(dp_side.status_da_reuniao||dp_side.status_do_negocio)?`<div style="padding:6px 20px 2px;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Pós-Sessão</div>
-        <div class="props-list" style="border-top:none">
-          ${[
-            ['Status reunião',dp_side.status_da_reuniao],
-            ['Status negócio',dp_side.status_do_negocio],
-            ['Urgência',dp_side.nivel_de_urgencia],
-            ['Fala c/ decisor?',dp_side.bant_autoridade],
-            ['Deadline',dp_side.bant__necessidade],
-            ['Renovação',dp_side.renovacao],
-            ['Motivo no-show',dp_side.motivo_do_noshow],
-            ['Retornar SDR',dp_side.retornar_para_sdr],
-          ].filter(r=>r[1]).map(r=>propRow(r[0],r[1])).join('')}
-        </div>`:''}
+      ${(()=>{
+        const fields=[
+          ['Status reunião',dp_side.status_da_reuniao],
+          ['Status negócio',dp_side.status_do_negocio],
+          ['Urgência',dp_side.nivel_de_urgencia],
+          ['Fala c/ decisor?',dp_side.bant_autoridade],
+          ['Deadline',dp_side.bant__necessidade],
+          ['Renovação',dp_side.renovacao],
+          ['Motivo no-show',dp_side.motivo_do_noshow],
+          ['Retornar SDR',dp_side.retornar_para_sdr],
+        ].filter(r=>r[1]);
+        if(!isAristo||!fields.length)return'';
+        return`<div style="padding:6px 20px 2px;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Pós-Sessão</div>
+          <div class="props-list" style="border-top:none">${fields.map(r=>propRow(r[0],r[1])).join('')}</div>`;
+      })()}
       ${brandSet.size?`<div style="padding:6px 20px 2px;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Marcas</div>
         <div class="brand-tags">${[...brandSet].map(b=>{const br=BRANDS[b]||BRANDS.OUTRO;return`<span class="brand-tag" style="background:${br.bg};color:${br.color};border:1px solid ${br.color}33">${br.label}</span>`;}).join('')}</div>`:''}
       <div class="status-row">
@@ -608,9 +663,8 @@ function render(contact,activities,leads,deals,meetings){
     (meetings.length?buildMeetings(meetings):'')+
     buildCourses(p,leads,activities)+
     buildTimeline(activities)+
-    (deals.length?buildDeals(deals):'')+
     buildZenvia(deals)+
-    buildEngagement(p);
+    buildEngagement(p,activities);
 }
 
 function isAristoBrand(p,leads,deals){
@@ -621,24 +675,17 @@ function isAristoBrand(p,leads,deals){
   return false;
 }
 
-// Returns Aristo lead/deal props for left card injection
+// Aristo stage IDs
 const _ARISTO_SDR_IDS=['1087683153','1087683154','1087683156','1269135952','1269320048'];
 const _ARISTO_DL_IDS =['1269123352','1269123353','1269225336','1269225337'];
 
+// Returns Aristo lead/deal props for left card injection
 function getAristoSidebarProps(leads,deals){
   const sdrLead=leads
-    .filter(l=>{
-      const lp=l.properties||{};
-      return(lp.hs_pipeline||'').toLowerCase().includes('aristo')||
-             _ARISTO_SDR_IDS.includes(lp.hs_pipeline_stage||'');
-    })
+    .filter(l=>{const lp=l.properties||{};return(lp.hs_pipeline||'').toLowerCase().includes('aristo')||_ARISTO_SDR_IDS.includes(lp.hs_pipeline_stage||'');})
     .sort((a,b)=>(b.properties?.createdate||'').localeCompare(a.properties?.createdate||''))[0];
   const closerDeal=deals
-    .filter(d=>{
-      const dp=d.properties||{};
-      return(dp.pipeline||'').toLowerCase().includes('aristo')||
-             _ARISTO_DL_IDS.includes(dp.dealstage||'');
-    })
+    .filter(d=>{const dp=d.properties||{};return(dp.pipeline||'').toLowerCase().includes('aristo')||_ARISTO_DL_IDS.includes(dp.dealstage||'');})
     .sort((a,b)=>(b.properties?.createdate||'').localeCompare(a.properties?.createdate||''))[0];
   return {sdrLead, closerDeal};
 }
@@ -716,68 +763,39 @@ function stageClass(stageKey, currentKey, allKeys){
   return'pending';
 }
 
+// FUNIL ARISTO — colapsável, detecção por ID, tempo por etapa
 function buildAristoFunnel(leads,deals){
-  // Pega lead SDR Aristo mais recente (por nome do pipeline OU stage ID)
   const sdrLead=leads
-    .filter(l=>{
-      const lp=l.properties||{};
-      return(lp.hs_pipeline||'').toLowerCase().includes('aristo')||
-             _ARISTO_SDR_IDS.includes(lp.hs_pipeline_stage||'');
-    })
+    .filter(l=>{const lp=l.properties||{};return(lp.hs_pipeline||'').toLowerCase().includes('aristo')||_ARISTO_SDR_IDS.includes(lp.hs_pipeline_stage||'');})
     .sort((a,b)=>(b.properties?.createdate||'').localeCompare(a.properties?.createdate||''))[0];
-
-  // Pega negócio Aristo Closers mais recente (por nome do pipeline OU stage ID)
   const closerDeal=deals
-    .filter(d=>{
-      const dp=d.properties||{};
-      return(dp.pipeline||'').toLowerCase().includes('aristo')||
-             _ARISTO_DL_IDS.includes(dp.dealstage||'');
-    })
+    .filter(d=>{const dp=d.properties||{};return(dp.pipeline||'').toLowerCase().includes('aristo')||_ARISTO_DL_IDS.includes(dp.dealstage||'');})
     .sort((a,b)=>(b.properties?.createdate||'').localeCompare(a.properties?.createdate||''))[0];
 
-  const sdrStageRaw=normalizeStage(sdrLead?.properties?.hs_pipeline_stage||'');
-  const closerStageRaw=normalizeStage(closerDeal?.properties?.dealstage||'');
+  const lp=sdrLead?.properties||{};
+  const dp=closerDeal?.properties||{};
+  const sdrCurrent=lp.hs_pipeline_stage||null;
+  const closerCurrent=dp.dealstage||null;
 
   const sdrKeys=ARISTO_SDR_STAGES.map(s=>s.key);
   const closerKeys=ARISTO_CLOSER_STAGES.map(s=>s.key);
 
-  function matchKey(raw, keys){
-    if(!raw)return null;
-    // Try direct match first (numeric IDs come back as-is)
-    if(keys.includes(raw))return raw;
-    // Then try include-based match (normalized labels)
-    return keys.find(k=>raw.includes(k)||k.includes(raw))||null;
-  }
-  const sdrCurrent=matchKey(sdrStageRaw,sdrKeys)||matchKey(sdrLead?.properties?.hs_pipeline_stage||'',sdrKeys);
-  const closerCurrent=matchKey(closerStageRaw,closerKeys)||matchKey(closerDeal?.properties?.dealstage||'',closerKeys);
-
-  const lp=sdrLead?.properties||{};
-  const dp=closerDeal?.properties||{};
-
   function stageDetail(key){
-    // Map numeric IDs → property group
-    const SDR_KEY_TO_NAME={'1087683154':'abordagem','1087683156':'qualificacao'};
-    const DL_KEY_TO_NAME={'1269123353':'pos_sessao'};
-    const name=SDR_KEY_TO_NAME[key]||DL_KEY_TO_NAME[key]||normalizeStage(key);
-    if(name==='abordagem'){
-      return detailRow('Follow-ups',lp.quantidade_de_followup);
-    }
-    if(name==='qualificacao'){
-      return[
-        detailRow('Ano da prova',lp.ano_que_vai_prestar_a_prova),
-        detailRow('Formação em',lp.em_que_ano_voce_se_forma),
-        detailRow('Instituição',lp.instituicao_de_ensino_superior),
-        detailRow('Prova pretendida',lp.prova_pretendida),
-        detailRow('Produto pretendido',lp.aristo_produto_pretendido),
-        detailRow('Temperatura',lp.temperatura_do_lead),
-      ].join('');
-    }
-    if(name==='pos_sessao'){
+    const SDR_KEY_TO_GROUP={'1087683154':'abordagem','1087683156':'qualificacao'};
+    const DL_KEY_TO_GROUP={'1269123353':'pos_sessao'};
+    const group=SDR_KEY_TO_GROUP[key]||DL_KEY_TO_GROUP[key]||'';
+    if(group==='abordagem') return detailRow('Follow-ups',lp.quantidade_de_followup);
+    if(group==='qualificacao') return[
+      detailRow('Ano da prova',lp.ano_que_vai_prestar_a_prova),
+      detailRow('Formação em',lp.em_que_ano_voce_se_forma),
+      detailRow('Instituição',lp.instituicao_de_ensino_superior),
+      detailRow('Prova pretendida',lp.prova_pretendida),
+      detailRow('Produto pretendido',lp.aristo_produto_pretendido),
+      detailRow('Temperatura',lp.temperatura_do_lead),
+    ].join('');
+    if(group==='pos_sessao'){
       const status=dp.status_da_reuniao||'';
-      const base=[
-        detailRow('Renovação',dp.renovacao),
-        detailRow('Status da reunião',dp.status_da_reuniao),
-      ].join('');
+      const base=[detailRow('Renovação',dp.renovacao),detailRow('Status da reunião',dp.status_da_reuniao)].join('');
       const realizada=status.toLowerCase().includes('realiza')?[
         detailRow('Status do negócio',dp.status_do_negocio),
         detailRow('Nível de urgência',dp.nivel_de_urgencia),
@@ -785,7 +803,7 @@ function buildAristoFunnel(leads,deals){
         detailRow('Deadline',dp.bant__necessidade),
         dp.link_de_pagamento_enviado?`<div class="aristo-detail-row"><span class="aristo-detail-label">Link de pagamento</span><a href="${dp.link_de_pagamento_enviado}" target="_blank" style="color:var(--accent);font-size:12px">Abrir ↗</a></div>`:'',
       ].join(''):'';
-      const noshow=status.toLowerCase().includes('n')&&status.toLowerCase().includes('comparec')?[
+      const noshow=status.toLowerCase().includes('não comparec')||status.toLowerCase().includes('no show')?[
         detailRow('Motivo no-show',dp.motivo_do_noshow),
         detailRow('Retornar ao SDR',dp.retornar_para_sdr),
       ].join(''):'';
@@ -817,20 +835,22 @@ function buildAristoFunnel(leads,deals){
 
   const sdrHtml=buildPipelineStages(ARISTO_SDR_STAGES,sdrCurrent,sdrKeys,stageDetail,lp);
   const closerHtml=buildPipelineStages(ARISTO_CLOSER_STAGES,closerCurrent,closerKeys,stageDetail,dp);
+  const uid='journey_'+Date.now();
 
-  return`<div class="section-card">
-    <div class="section-header">
+  return`<div class="section-card" id="${uid}">
+    <div class="section-header collapsible" onclick="toggleCollapse('${uid}')">
       <div class="section-icon" style="background:rgba(247,201,72,.12)">🎓</div>
       <div class="section-title">Jornada Aristo</div>
+      <span class="collapse-arrow">▾</span>
     </div>
-    <div class="aristo-funnel">
-      <div class="aristo-pipeline-label">SDR Pipeline</div>
-      <div class="aristo-stages">${sdrHtml}</div>
-      <div class="aristo-pipeline-divider">
-        <span>↓ Reunião agendada → Closers</span>
+    <div class="collapsible-body">
+      <div class="aristo-funnel">
+        <div class="aristo-pipeline-label">SDR Pipeline</div>
+        <div class="aristo-stages">${sdrHtml}</div>
+        <div class="aristo-pipeline-divider"><span>↓ Reunião agendada → Closers</span></div>
+        <div class="aristo-pipeline-label">Closers Pipeline</div>
+        <div class="aristo-stages">${closerHtml}</div>
       </div>
-      <div class="aristo-pipeline-label">Closers Pipeline</div>
-      <div class="aristo-stages">${closerHtml}</div>
     </div>
   </div>`;
 }
@@ -963,6 +983,10 @@ function buildTimeline(activities){
   </div>`;
 }
 
+function toggleCollapse(id){
+  document.getElementById(id)?.classList.toggle('collapsed');
+}
+
 function toggleExpand(id,btn){
   const el=document.getElementById(id);
   const open=el.classList.toggle('open');
@@ -1052,18 +1076,94 @@ function zvSwitch(idx,btn){
   btn.classList.add('active');
 }
 
-// ENGAGEMENT
-function buildEngagement(p){
-  const v=parseInt(p.hs_analytics_num_visits||0),pv=parseInt(p.hs_analytics_num_page_views||0),eo=parseInt(p.hs_email_open||0),ec=parseInt(p.hs_email_click||0);
-  const rows=[
-    {label:'Sessões no site',val:v,max:Math.max(v,30),color:'var(--accent)'},
-    {label:'Pageviews',val:pv,max:Math.max(pv,60),color:'var(--accent2)'},
-    {label:'Emails abertos',val:eo,max:Math.max(eo,ec,10),color:'var(--accent3)'},
-    {label:'Emails clicados',val:ec,max:Math.max(eo,ec,10),color:'var(--success)'},
-  ].map(r=>`<div class="eng-row"><span class="eng-label">${r.label}</span><div class="eng-bar-wrap"><div class="eng-bar" style="width:${r.max?(r.val/r.max*100):0}%;background:${r.color}"></div></div><span class="eng-value">${r.val}</span></div>`).join('');
-  return`<div class="section-card">
-    <div class="section-header"><div class="section-icon" style="background:rgba(92,240,160,.12)">📊</div><div class="section-title">Engajamento</div></div>
-    <div class="engagement-wrap">${rows}</div>
+// ENGAGEMENT — formulários preenchidos + páginas visitadas + stats
+function buildEngagement(p,activities){
+  // Stats gerais
+  const visits=parseInt(p.hs_analytics_num_visits||0);
+  const pageviews=parseInt(p.hs_analytics_num_page_views||0);
+  const emailsOpen=parseInt(p.hs_email_open||0);
+  const emailsClick=parseInt(p.hs_email_click||0);
+
+  // Formulários a partir das atividades
+  const formActivities=activities.filter(a=>{
+    const ap=a.properties||{};
+    const body=ap.hs_body_preview||ap.hs_note_body||ap.hs_title||'';
+    return body.toLowerCase().includes('enviou')||ap.hs_activity_type==='FORM_SUBMISSION';
+  });
+
+  // Agrupa por mês
+  const byMonth={};
+  formActivities.forEach(a=>{
+    const ap=a.properties||{};
+    const ts=ap.hs_timestamp||'';
+    const d=ts?new Date(ts):null;
+    const monthKey=d?`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`:'sem-data';
+    const monthLabel=d?d.toLocaleDateString('pt-BR',{month:'long',year:'numeric'}):'Sem data';
+    if(!byMonth[monthKey])byMonth[monthKey]={label:monthLabel,items:[]};
+    byMonth[monthKey].items.push(a);
+  });
+
+  const monthsHtml=Object.keys(byMonth).sort((a,b)=>b.localeCompare(a)).map(mk=>{
+    const m=byMonth[mk];
+    const itemsHtml=m.items.map(a=>{
+      const ap=a.properties||{};
+      const body=ap.hs_body_preview||ap.hs_note_body||'';
+      const ts=ap.hs_timestamp;
+      const d=ts?new Date(ts):null;
+      const timeStr=d?d.toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})+' às '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'';
+
+      // Extrai nome do formulário e página do texto
+      const formMatch=body.match(/enviou\s+\[?(.+?)\]?\s+em\s+/i);
+      const formName=formMatch?formMatch[1]:(ap.hs_title||'Formulário enviado');
+      const pageMatch=body.match(/em\s+(.+)$/i);
+      const pageName=pageMatch?pageMatch[1]:'';
+
+      // Extrai campos estruturados
+      const fields=extractFormFields(body);
+      const fieldsHtml=fields.length?`<div class="eng-form-fields">${fields.map(f=>`<div class="eng-ff-item"><div class="eng-ff-label">${f.label}</div><div class="eng-ff-value">${f.value}</div></div>`).join('')}</div>`:'';
+
+      const brand=getBrand(body);
+      return`<div class="eng-form-item">
+        <div class="eng-form-header">
+          <div class="eng-form-icon" style="background:${brand.bg}">📋</div>
+          <div class="eng-form-meta">
+            <div class="eng-form-title">${formName}</div>
+            ${pageName?`<div class="eng-form-sub">📄 ${pageName}</div>`:''}
+          </div>
+          <div class="eng-form-date">${timeStr}</div>
+        </div>
+        ${fieldsHtml}
+      </div>`;
+    }).join('');
+    return`<div class="eng-month">
+      <div class="eng-month-label">${m.label}</div>
+    </div>${itemsHtml}`;
+  }).join('');
+
+  // Stats row
+  const statsHtml=`<div class="eng-stats-row">
+    <div class="eng-stat"><div class="eng-stat-val" style="color:var(--accent)">${visits}</div><div class="eng-stat-lbl">Visitas</div></div>
+    <div class="eng-stat"><div class="eng-stat-val" style="color:var(--accent2)">${pageviews}</div><div class="eng-stat-lbl">Pageviews</div></div>
+    <div class="eng-stat"><div class="eng-stat-val" style="color:var(--accent3)">${emailsOpen}</div><div class="eng-stat-lbl">Emails abertos</div></div>
+    <div class="eng-stat"><div class="eng-stat-val" style="color:var(--success)">${emailsClick}</div><div class="eng-stat-lbl">Cliques email</div></div>
+  </div>`;
+
+  const empty=!formActivities.length?`<div style="padding:24px 20px;text-align:center;color:var(--muted);font-size:13px">Nenhum formulário encontrado nas atividades</div>`:'';
+  const uid='eng_'+Date.now();
+
+  return`<div class="section-card" id="${uid}">
+    <div class="section-header collapsible" onclick="toggleCollapse('${uid}')">
+      <div class="section-icon" style="background:rgba(92,240,160,.12)">📊</div>
+      <div class="section-title">Engajamento & Formulários</div>
+      <div class="section-count">${formActivities.length} forms</div>
+      <span class="collapse-arrow" style="margin-left:8px">▾</span>
+    </div>
+    <div class="collapsible-body">
+      ${statsHtml}
+      <div class="eng-section">
+        ${monthsHtml||empty}
+      </div>
+    </div>
   </div>`;
 }
 
