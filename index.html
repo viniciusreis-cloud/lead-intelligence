@@ -3,725 +3,989 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Primum · Lead Intelligence</title>
+<title>Primum — Lead Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
+  :root {
+    --bg:#0a0a0f;--surface:#111118;--surface2:#16161f;--border:rgba(255,255,255,0.07);
+    --text:#e8e8f0;--muted:#6b6b80;--accent:#7c6af7;--accent2:#4ecdc4;--accent3:#f7c948;
+    --danger:#f76a6a;--success:#5cf0a0;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;min-height:100vh;overflow-x:hidden;}
 
-:root {
-  --bg:        #0d0f14;
-  --card:      #13161d;
-  --card2:     #181c24;
-  --border:    rgba(255,255,255,.07);
-  --text:      #e8eaf0;
-  --muted:     #6b7280;
-  --dim:       #3a4050;
-  --aristo:    #f5a623;
-  --aristo-bg: rgba(245,166,35,.08);
-  --aristo-bd: rgba(245,166,35,.22);
-  --green:     #22c55e;
-  --green-bg:  rgba(34,197,94,.08);
-  --red:       #ef4444;
-  --red-bg:    rgba(239,68,68,.08);
-  --blue:      #38bdf8;
-  --blue-bg:   rgba(56,189,248,.08);
-  --purple:    #a78bfa;
-  --purple-bg: rgba(167,139,250,.08);
-  --r: 12px;
-  --shadow: 0 2px 8px rgba(0,0,0,.5),0 12px 40px rgba(0,0,0,.3);
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5}
+  /* LOGIN */
+  .login-wrap{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:var(--bg);}
+  .login-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px;width:360px;animation:fadeUp .4s ease;}
+  .login-logo{font-family:'DM Serif Display',serif;font-size:24px;margin-bottom:6px;display:flex;align-items:center;gap:10px;}
+  .login-dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent);}
+  .login-sub{color:var(--muted);font-size:13px;margin-bottom:28px;}
+  .login-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+  .login-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .15s;margin-bottom:16px;}
+  .login-input:focus{border-color:var(--accent);}
+  .login-input::placeholder{color:var(--muted);}
+  .login-btn{width:100%;padding:12px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s;}
+  .login-btn:hover{background:#6a58e8;}
+  .login-error{color:var(--danger);font-size:12px;margin-top:10px;display:none;}
 
-/* LOGIN */
-#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
-.login-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:40px 36px;width:100%;max-width:400px;box-shadow:var(--shadow)}
-.login-logo{font-size:22px;font-weight:700;letter-spacing:-.5px;color:var(--aristo);margin-bottom:4px}
-.login-logo span{color:var(--muted);font-weight:400;font-size:14px}
-.login-sub{color:var(--muted);font-size:13px;margin-bottom:28px}
-.field{margin-bottom:16px}
-.field label{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px}
-.field input{width:100%;padding:11px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:'DM Mono',monospace;transition:border-color .2s}
-.field input:focus{outline:none;border-color:var(--aristo)}
-.btn{cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;border:none;border-radius:8px;padding:11px 20px;transition:opacity .15s,transform .1s}
-.btn:active{transform:scale(.98)}
-.btn-primary{background:var(--aristo);color:#000}
-.btn-primary:hover{opacity:.88}
-.btn-ghost{background:var(--card2);color:var(--text);border:1px solid var(--border)}
-.btn-ghost:hover{opacity:.8}
-.login-error{color:var(--red);font-size:12px;margin-top:10px;display:none;text-align:center}
+  /* TOPBAR */
+  .topbar{position:sticky;top:0;z-index:100;background:rgba(10,10,15,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 28px;display:flex;align-items:center;gap:14px;height:54px;}
+  .logo{font-family:'DM Serif Display',serif;font-size:17px;display:flex;align-items:center;gap:8px;}
+  .logo-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+  .topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+  .btn{padding:7px 14px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;}
+  .btn:hover{background:var(--surface);border-color:rgba(255,255,255,.15);}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .btn.primary:hover{background:#6a58e8;}
+  .search-wrap{flex:1;max-width:420px;position:relative;}
+  .search-wrap input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px 14px 8px 36px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .15s;}
+  .search-wrap input::placeholder{color:var(--muted);}
+  .search-wrap input:focus{border-color:var(--accent);}
+  .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);}
 
-/* APP */
-#app{display:none}
-.topbar{display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20}
-.topbar-logo{font-size:14px;font-weight:700;letter-spacing:-.3px;color:var(--aristo);white-space:nowrap}
-.topbar-logo span{color:var(--muted);font-weight:400}
-.topbar-search{flex:1;max-width:320px;display:flex;gap:6px}
-.topbar-search input{flex:1;padding:7px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;font-family:'DM Mono',monospace}
-.topbar-search input:focus{outline:none;border-color:var(--aristo)}
-.topbar-search .btn{padding:7px 14px;font-size:12px}
-.topbar-right{margin-left:auto}
-.topbar-right .btn{padding:6px 14px;font-size:12px}
+  /* LAYOUT */
+  .main{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:24px 28px;display:grid;grid-template-columns:290px 1fr;gap:20px;align-items:start;}
 
-/* LAYOUT */
-.layout{display:grid;grid-template-columns:300px 1fr;gap:14px;padding:14px;max-width:1280px;margin:0 auto;align-items:start}
+  /* CONTACT CARD */
+  .contact-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;position:sticky;top:68px;animation:fadeUp .4s ease;}
+  .contact-header{padding:20px;background:linear-gradient(135deg,rgba(124,106,247,.12),rgba(78,205,196,.06));border-bottom:1px solid var(--border);position:relative;}
+  .contact-avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:18px;color:#fff;margin-bottom:10px;box-shadow:0 4px 16px rgba(124,106,247,.3);}
+  .contact-name{font-family:'DM Serif Display',serif;font-size:18px;letter-spacing:-.3px;margin-bottom:2px;}
+  .contact-email{color:var(--muted);font-size:12px;}
+  .priority-badge{position:absolute;top:20px;right:20px;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
+  .priority-tier1{background:rgba(92,240,160,.15);color:var(--success);border:1px solid rgba(92,240,160,.3);}
+  .priority-tier2{background:rgba(247,201,72,.15);color:var(--accent3);border:1px solid rgba(247,201,72,.3);}
+  .priority-tier3{background:rgba(247,160,106,.12);color:#f7a06a;border:1px solid rgba(247,160,106,.3);}
+  .priority-tier4{background:rgba(107,107,128,.15);color:var(--muted);border:1px solid var(--border);}
 
-/* LEFT CARD */
-.left-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;position:sticky;top:52px}
-.ch{padding:18px 18px 14px;border-bottom:1px solid var(--border)}
-.ch-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
-.avatar{width:42px;height:42px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--aristo) 0%,#c87d00 100%);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#000}
-.ch-info{flex:1;min-width:0}
-.ch-name{font-size:15px;font-weight:600;line-height:1.3}
-.ch-email{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}
-.prio-badge{font-size:9px;font-weight:700;letter-spacing:.7px;padding:3px 8px;border-radius:20px;text-transform:uppercase;flex-shrink:0;margin-top:2px}
-.pv1{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.3)}
-.pv2{background:var(--aristo-bg);color:var(--aristo);border:1px solid var(--aristo-bd)}
-.pv3{background:var(--blue-bg);color:var(--blue);border:1px solid rgba(56,189,248,.25)}
-.pv4{background:rgba(107,114,128,.08);color:var(--muted);border:1px solid rgba(107,114,128,.2)}
-.score-row{display:flex;align-items:center;gap:10px;background:var(--card2);border-radius:8px;padding:10px 12px}
-.ring-wrap{position:relative;width:44px;height:44px;flex-shrink:0}
-.ring-wrap svg{transform:rotate(-90deg)}
-.ring-bg{fill:none;stroke:var(--border);stroke-width:4}
-.ring-fill{fill:none;stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset .6s ease}
-.ring-lbl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
-.s-title{font-size:11px;color:var(--muted)}
-.s-val{font-size:19px;font-weight:700;line-height:1.2}
-.s-sub{font-size:10px;color:var(--muted)}
+  /* SCORE */
+  .score-section{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;}
+  .score-ring{position:relative;width:64px;height:64px;flex-shrink:0;}
+  .score-ring svg{transform:rotate(-90deg);}
+  .score-ring-bg{fill:none;stroke:var(--surface2);stroke-width:5;}
+  .score-ring-fill{fill:none;stroke-width:5;stroke-linecap:round;}
+  .score-number{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;}
+  .score-info{flex:1;}
+  .score-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
+  .score-value{font-size:19px;font-weight:600;}
+  .score-sub{font-size:11px;color:var(--muted);margin-top:1px;}
 
-/* STAGE HERO */
-.stage-hero{margin:12px 16px;border-radius:10px;overflow:hidden;border:1.5px solid var(--aristo-bd);background:var(--aristo-bg)}
-.stage-hero.lost{border-color:rgba(239,68,68,.3);background:var(--red-bg)}
-.stage-hero.won{border-color:rgba(34,197,94,.3);background:var(--green-bg)}
-.stage-hero.none{border-color:var(--border);background:var(--card2)}
-.sh-top{padding:8px 12px 3px;display:flex;align-items:center;gap:6px}
-.sh-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:var(--aristo);box-shadow:0 0 6px var(--aristo);animation:glow 2s infinite}
-.stage-hero.lost .sh-dot{background:var(--red);box-shadow:0 0 6px var(--red);animation:none}
-.stage-hero.won .sh-dot{background:var(--green);box-shadow:0 0 6px var(--green);animation:none}
-.stage-hero.none .sh-dot{background:var(--muted);box-shadow:none;animation:none}
-@keyframes glow{0%,100%{box-shadow:0 0 4px var(--aristo)}50%{box-shadow:0 0 12px var(--aristo),0 0 24px rgba(245,166,35,.25)}}
-.sh-pipe{font-size:9px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--aristo);opacity:.75}
-.stage-hero.lost .sh-pipe{color:var(--red)}
-.stage-hero.won .sh-pipe{color:var(--green)}
-.stage-hero.none .sh-pipe{color:var(--muted)}
-.sh-body{padding:2px 12px 10px}
-.sh-name{font-size:17px;font-weight:700;color:var(--aristo);line-height:1.2;margin-bottom:3px}
-.stage-hero.lost .sh-name{color:var(--red)}
-.stage-hero.won .sh-name{color:var(--green)}
-.stage-hero.none .sh-name{color:var(--muted);font-size:13px;font-weight:500}
-.sh-time{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px}
-.sh-time::before{content:'⏱';font-size:10px}
+  /* ROTULO */
+  .rotulo-section{padding:14px 20px;border-bottom:1px solid var(--border);}
+  .rotulo-title{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+  .rotulo-list{display:flex;flex-direction:column;gap:6px;}
+  .rotulo-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .rotulo-brand{font-size:11px;color:var(--muted);}
+  .rotulo-badge{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;}
+  .rotulo-alta{background:rgba(92,240,160,.15);color:var(--success);border:1px solid rgba(92,240,160,.3);}
+  .rotulo-media{background:rgba(247,201,72,.15);color:var(--accent3);border:1px solid rgba(247,201,72,.3);}
+  .rotulo-baixa{background:rgba(247,106,106,.12);color:var(--danger);border:1px solid rgba(247,106,106,.3);}
+  .rotulo-unknown{background:var(--surface2);color:var(--muted);border:1px solid var(--border);}
 
-/* PROP ROWS */
-.section-block{padding:10px 16px 4px}
-.section-block-title{font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
-.prop-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)}
-.prop-row:last-child{border-bottom:none}
-.pk{font-size:12px;color:var(--muted);flex-shrink:0;max-width:48%}
-.pv{font-size:12px;font-weight:500;text-align:right;word-break:break-word;max-width:52%}
-.pv.hot{color:#f87171}
-.pv.warm{color:var(--aristo)}
-.pv.cold{color:var(--blue)}
-.brand-chips{display:flex;flex-wrap:wrap;gap:6px;padding:10px 16px 14px}
-.bchip{font-size:10px;font-weight:700;letter-spacing:.4px;padding:3px 10px;border-radius:20px;background:var(--aristo-bg);color:var(--aristo);border:1px solid var(--aristo-bd)}
-.blabel{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;background:transparent;color:var(--muted);border:1px solid var(--border)}
+  /* PROPS */
+  .props-list{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:9px;}
+  .prop-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+  .prop-label{color:var(--muted);font-size:12px;flex-shrink:0;padding-top:1px;}
+  .prop-value{font-size:12px;font-weight:500;text-align:right;word-break:break-word;}
 
-/* RIGHT COLUMN */
-.right-col{display:flex;flex-direction:column;gap:12px}
-.scard{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
-.shead{display:flex;align-items:center;gap:10px;padding:13px 18px 11px;border-bottom:1px solid var(--border)}
-.sicon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
-.stitle{font-size:14px;font-weight:600;flex:1}
-.scnt{font-size:11px;font-weight:600;background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:2px 9px;color:var(--muted)}
+  /* BRANDS */
+  .brand-tags{padding:10px 20px;display:flex;flex-wrap:wrap;gap:5px;border-bottom:1px solid var(--border);}
+  .brand-tag{padding:3px 9px;border-radius:6px;font-size:11px;font-weight:700;}
 
-/* PIPELINE */
-.pipeline-wrap{padding:14px 18px 16px}
-.pipe-label{font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--dim);display:flex;align-items:center;gap:8px;margin-bottom:14px}
-.pipe-label::after{content:'';flex:1;height:1px;background:var(--border)}
-.steps{display:flex;align-items:flex-start}
-.step{flex:1;display:flex;flex-direction:column;align-items:center;position:relative}
-.step:not(:last-child)::after{content:'';position:absolute;top:14px;left:calc(50% + 14px);right:calc(-50% + 14px);height:2px;background:var(--border);z-index:0}
-.step.done:not(:last-child)::after{background:rgba(34,197,94,.35)}
-.step.current:not(:last-child)::after{background:rgba(245,166,35,.25)}
-.step-dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--dim);background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:12px;position:relative;z-index:1;flex-shrink:0;transition:all .2s}
-.step.done .step-dot{border-color:var(--green);background:var(--green-bg);color:var(--green)}
-.step.current .step-dot{border-color:var(--aristo);background:var(--aristo-bg);box-shadow:0 0 0 4px rgba(245,166,35,.15);animation:step-pulse 2.2s infinite}
-@keyframes step-pulse{0%,100%{box-shadow:0 0 0 4px rgba(245,166,35,.15)}50%{box-shadow:0 0 0 8px rgba(245,166,35,.06)}}
-.step.lost .step-dot{border-color:var(--red);background:var(--red-bg);color:var(--red)}
-.step.won .step-dot{border-color:var(--green);background:var(--green-bg);color:var(--green)}
-.step.future .step-dot{opacity:.3}
-.step-name{font-size:10px;font-weight:500;color:var(--muted);text-align:center;margin-top:6px;line-height:1.3}
-.step.current .step-name{color:var(--aristo);font-weight:700}
-.step.done .step-name{color:rgba(34,197,94,.8)}
-.step.lost .step-name{color:var(--red)}
-.step.won .step-name{color:var(--green)}
-.step.future .step-name{opacity:.35}
-.step-time{font-size:9px;color:var(--dim);text-align:center;margin-top:2px;font-family:'DM Mono',monospace}
-.step.done .step-time{color:rgba(34,197,94,.55)}
-.step.current .step-time{color:rgba(245,166,35,.65)}
-.pipe-divider{display:flex;align-items:center;gap:10px;padding:4px 18px 2px;font-size:10px;color:var(--muted)}
-.pipe-div-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--aristo-bd),transparent)}
-.closers-inactive{opacity:.25;pointer-events:none}
+  /* STATUS */
+  .status-row{padding:12px 20px;display:flex;flex-wrap:wrap;gap:5px;}
+  .status-chip{display:flex;align-items:center;gap:5px;padding:4px 9px;border-radius:7px;background:var(--surface2);border:1px solid var(--border);font-size:11px;font-weight:500;}
+  .chip-dot{width:6px;height:6px;border-radius:50%;}
 
-/* COURSES */
-.courses-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:10px;padding:14px 18px}
-.course-card{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px;position:relative;overflow:hidden}
-.cc-bar{position:absolute;top:0;left:0;right:0;height:3px}
-.cc-brand{font-size:9px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;margin-bottom:4px}
-.cc-name{font-size:12px;font-weight:600;line-height:1.4;margin-bottom:6px}
-.cc-date{font-size:10px;color:var(--muted);margin-bottom:6px}
-.tag{font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;padding:2px 8px;border-radius:20px;display:inline-block}
+  /* RIGHT */
+  .right-col{display:flex;flex-direction:column;gap:18px;}
+  .section-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;animation:fadeUp .4s ease;}
+  .section-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+  .section-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;}
+  .section-title{font-family:'DM Serif Display',serif;font-size:15px;letter-spacing:-.2px;}
+  .section-count{margin-left:auto;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:2px 9px;font-size:11px;color:var(--muted);}
 
-/* MEETINGS */
-.meetings-list{padding:6px 0}
-.meeting-row{display:flex;gap:12px;padding:12px 18px;border-bottom:1px solid var(--border);transition:background .15s}
-.meeting-row:last-child{border-bottom:none}
-.meeting-row:hover{background:rgba(255,255,255,.02)}
-.mi-icon{font-size:18px;flex-shrink:0;padding-top:1px}
-.mi-body{flex:1}
-.mi-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}
-.mi-title{font-size:13px;font-weight:600;flex:1}
-.mi-outcome{font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid;text-transform:uppercase;letter-spacing:.4px}
-.mi-meta{display:flex;gap:14px;flex-wrap:wrap}
-.mi-meta span{font-size:11px;color:var(--muted)}
+  /* FUNIL */
+  .funnel-wrap{padding:20px 24px;}
+  .funnel-stages{display:flex;align-items:center;gap:0;}
+  .funnel-stage{flex:1;position:relative;}
+  .funnel-stage-inner{padding:12px 8px;text-align:center;border-radius:0;transition:all .2s;}
+  .funnel-stage:first-child .funnel-stage-inner{border-radius:10px 0 0 10px;}
+  .funnel-stage:last-child .funnel-stage-inner{border-radius:0 10px 10px 0;}
+  .funnel-stage-inner.done{background:linear-gradient(135deg,rgba(124,106,247,.2),rgba(124,106,247,.1));border:1px solid rgba(124,106,247,.3);}
+  .funnel-stage-inner.current{background:linear-gradient(135deg,rgba(92,240,160,.2),rgba(92,240,160,.1));border:1px solid rgba(92,240,160,.4);box-shadow:0 0 20px rgba(92,240,160,.1);}
+  .funnel-stage-inner.pending{background:var(--surface2);border:1px solid var(--border);}
+  .funnel-arrow{position:absolute;right:-8px;top:50%;transform:translateY(-50%);z-index:2;width:16px;height:16px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted);}
+  .funnel-stage:last-child .funnel-arrow{display:none;}
+  .funnel-icon{font-size:16px;margin-bottom:4px;}
+  .funnel-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px;}
+  .funnel-date{font-size:10px;color:var(--muted);}
+  .funnel-stage-inner.done .funnel-label{color:var(--accent);}
+  .funnel-stage-inner.current .funnel-label{color:var(--success);}
+  .funnel-stage-inner.pending .funnel-label{color:var(--muted);}
 
-/* TIMELINE */
-.timeline-wrap{padding:12px 18px}
-.tl-item{display:flex;gap:12px;margin-bottom:2px;position:relative}
-.tl-item:not(:last-child) .tl-line{position:absolute;left:13px;top:26px;bottom:-2px;width:1px;background:var(--border)}
-.tl-dot{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--border);background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;z-index:1}
-.tl-body{flex:1;padding-bottom:14px}
-.tl-title{font-size:12px;font-weight:500;line-height:1.4}
-.tl-date{font-size:10px;color:var(--dim);margin-top:2px}
+  /* COURSES */
+  .courses-grid{padding:16px 20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;}
+  .course-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:13px;transition:all .15s;position:relative;overflow:hidden;}
+  .course-card:hover{border-color:rgba(255,255,255,.15);transform:translateY(-1px);}
+  .course-top-bar{position:absolute;top:0;left:0;right:0;height:2px;}
+  .course-brand{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:5px;}
+  .course-name{font-size:12px;font-weight:500;line-height:1.4;}
+  .course-date{font-size:11px;color:var(--muted);margin-top:7px;}
+  .tl-tag{display:inline-flex;align-items:center;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:600;letter-spacing:.3px;margin-top:5px;}
 
-/* UTILS */
-.empty{padding:28px;text-align:center;color:var(--muted);font-size:13px}
-.loader{display:flex;align-items:center;justify-content:center;padding:60px;gap:8px;color:var(--muted);font-size:13px}
-.spinner{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--aristo);border-radius:50%;animation:spin .7s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.toast{position:fixed;bottom:20px;right:20px;z-index:100;background:var(--red);color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;display:none;box-shadow:0 4px 20px rgba(0,0,0,.4);max-width:320px}
+  /* TIMELINE */
+  .timeline{padding:4px 0;}
+  .timeline-item{padding:10px 20px;transition:background .15s;cursor:pointer;}
+  .timeline-item:hover{background:rgba(255,255,255,.02);}
+  .tl-row{display:grid;grid-template-columns:20px 1fr;gap:0 12px;}
+  .tl-line{display:flex;flex-direction:column;align-items:center;}
+  .tl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px;position:relative;z-index:1;}
+  .tl-connector{width:1px;flex:1;background:var(--border);margin-top:3px;}
+  .timeline-item:last-child .tl-connector{display:none;}
+  .tl-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:2px;}
+  .tl-title{font-size:13px;font-weight:500;line-height:1.4;}
+  .tl-date{font-size:11px;color:var(--muted);flex-shrink:0;padding-top:1px;}
+  .tl-sub{font-size:12px;color:var(--muted);line-height:1.5;}
+
+  /* FORM FIELDS EXPANDABLE */
+  .form-expand{margin-top:8px;display:none;}
+  .form-expand.open{display:block;}
+  .form-fields{background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:9px;padding:11px 13px;display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+  .ff-item{display:flex;flex-direction:column;gap:2px;}
+  .ff-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;}
+  .ff-value{font-size:12px;font-weight:500;}
+  .expand-btn{font-size:10px;color:var(--accent);cursor:pointer;margin-top:5px;display:inline-flex;align-items:center;gap:3px;background:none;border:none;padding:0;font-family:'DM Sans',sans-serif;}
+  .expand-btn:hover{color:#9b8ff9;}
+
+  /* ENGAGEMENT */
+  .engagement-wrap{padding:16px 20px;display:flex;flex-direction:column;gap:12px;}
+  .eng-row{display:flex;align-items:center;gap:10px;}
+  .eng-label{font-size:12px;color:var(--muted);width:120px;flex-shrink:0;}
+  .eng-bar-wrap{flex:1;height:5px;background:var(--surface2);border-radius:3px;overflow:hidden;}
+  .eng-bar{height:100%;border-radius:3px;}
+  .eng-value{font-size:12px;font-weight:600;width:32px;text-align:right;flex-shrink:0;}
+
+
+  /* ARISTO FUNNEL */
+  .aristo-funnel{padding:16px 20px 20px;}
+  .aristo-pipeline-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;font-weight:600;}
+  .aristo-pipeline-divider{text-align:center;padding:10px 0;font-size:11px;color:var(--muted);border-top:1px dashed var(--border);border-bottom:1px dashed var(--border);margin:12px 0;}
+  .aristo-stages{display:flex;flex-direction:column;gap:0;}
+  .aristo-stage{position:relative;}
+  .aristo-stage-top{display:flex;align-items:center;gap:10px;padding:10px 13px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);transition:all .15s;margin-bottom:2px;cursor:pointer;}
+  .aristo-stage.done .aristo-stage-top{background:rgba(124,106,247,.07);border-color:rgba(124,106,247,.2);}
+  .aristo-stage.current .aristo-stage-top{background:rgba(92,240,160,.07);border-color:rgba(92,240,160,.4);box-shadow:0 0 14px rgba(92,240,160,.07);}
+  .aristo-stage.pending .aristo-stage-top{opacity:.45;}
+  .aristo-stage-top:hover{border-color:rgba(255,255,255,.18);}
+  .aristo-stage-icon{font-size:13px;flex-shrink:0;}
+  .aristo-stage-info{flex:1;display:flex;flex-direction:column;gap:1px;}
+  .aristo-stage-label{font-size:13px;font-weight:500;line-height:1.3;}
+  .aristo-stage-time{font-size:10px;color:var(--muted);}
+  .aristo-stage.done .aristo-stage-label{color:var(--accent);}
+  .aristo-stage.current .aristo-stage-label{color:var(--success);}
+  .aristo-stage.current .aristo-stage-time{color:var(--success);opacity:.7;}
+  .aristo-current-badge{padding:2px 8px;border-radius:20px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;background:rgba(92,240,160,.15);color:var(--success);border:1px solid rgba(92,240,160,.3);flex-shrink:0;white-space:nowrap;}
+  .aristo-done-check{color:var(--accent);font-size:12px;font-weight:700;flex-shrink:0;}
+  .aristo-expand-icon{color:var(--muted);font-size:14px;flex-shrink:0;transition:transform .2s;}
+  .aristo-connector{width:2px;height:5px;margin:0 0 2px 17px;}
+  .aristo-connector.done{background:var(--accent);opacity:.4;}
+  .aristo-connector.current{background:var(--success);opacity:.4;}
+  .aristo-connector{background:var(--border);}
+  .aristo-detail{display:none;background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:8px;padding:11px 13px;margin-bottom:4px;}
+  .aristo-detail.open{display:block;}
+  .aristo-detail-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:5px 0;border-bottom:1px solid var(--border);}
+  .aristo-detail-row:last-child{border-bottom:none;}
+  .aristo-detail-label{font-size:11px;color:var(--muted);flex-shrink:0;}
+  .aristo-detail-value{font-size:12px;font-weight:500;text-align:right;word-break:break-word;}
+
+  /* MEETINGS */
+  .meetings-list{padding:8px 0;}
+  .meeting-item{display:flex;gap:12px;padding:12px 20px;transition:background .15s;border-bottom:1px solid var(--border);}
+  .meeting-item:last-child{border-bottom:none;}
+  .meeting-item:hover{background:rgba(255,255,255,.02);}
+  .meeting-icon{font-size:20px;flex-shrink:0;padding-top:2px;}
+  .meeting-content{flex:1;}
+  .meeting-top{display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;}
+  .meeting-title{font-size:13px;font-weight:500;}
+  .meeting-outcome{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid;text-transform:uppercase;letter-spacing:.4px;}
+  .meeting-meta{display:flex;gap:14px;flex-wrap:wrap;}
+  .meeting-meta span{font-size:11px;color:var(--muted);}
+
+  /* ZENVIA */
+  .zv-tabs{padding:10px 20px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--border);}
+  .zv-tab{padding:5px 12px;border-radius:7px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;}
+  .zv-tab.active{background:rgba(78,205,196,.12);border-color:rgba(78,205,196,.3);color:var(--accent2);}
+  .zv-panel{max-height:420px;overflow-y:auto;}
+  .zv-panel.hidden{display:none;}
+  .zv-chat{padding:16px 20px;display:flex;flex-direction:column;gap:10px;}
+  .zv-msg{display:flex;flex-direction:column;max-width:75%;}
+  .zv-msg.agent{align-self:flex-end;align-items:flex-end;}
+  .zv-msg.contact{align-self:flex-start;align-items:flex-start;}
+  .zv-sender{font-size:10px;color:var(--muted);margin-bottom:3px;display:flex;gap:6px;align-items:center;}
+  .zv-time{color:var(--muted);font-size:10px;}
+  .zv-bubble{padding:8px 12px;border-radius:10px;font-size:12px;line-height:1.5;word-break:break-word;}
+  .zv-msg.agent .zv-bubble{background:rgba(124,106,247,.15);border:1px solid rgba(124,106,247,.2);border-radius:10px 10px 2px 10px;}
+  .zv-msg.contact .zv-bubble{background:var(--surface2);border:1px solid var(--border);border-radius:10px 10px 10px 2px;}
+
+
+  .loading{padding:48px 20px;text-align:center;color:var(--muted);}
+  .spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px;}
+  .empty-state{padding:56px 20px;text-align:center;}
+  .empty-icon{font-size:32px;margin-bottom:10px;}
+  .empty-title{font-family:'DM Serif Display',serif;font-size:17px;margin-bottom:5px;}
+  .empty-sub{color:var(--muted);font-size:13px;}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:20px;right:20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:13px;max-width:280px;z-index:1000;display:none;animation:fadeUp .3s ease;}
+  .toast.error{border-color:rgba(247,106,106,.5);color:var(--danger);}
+  .toast.success{border-color:rgba(92,240,160,.4);color:var(--success);}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  .pulse{animation:pulse 1.5s ease infinite;}
+  ::-webkit-scrollbar{width:5px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  @media(max-width:900px){.main{grid-template-columns:1fr;}.contact-card{position:static;}}
 </style>
 </head>
 <body>
 
 <!-- LOGIN -->
-<div id="loginScreen">
-  <div class="login-box">
-    <div class="login-logo">Primum <span>· Lead Intelligence</span></div>
-    <div class="login-sub">Acesso restrito ao time interno</div>
-    <div class="field">
-      <label>Senha de acesso</label>
-      <input type="password" id="passInput" placeholder="••••••••••••"
-             onkeydown="if(event.key==='Enter')doLogin()">
-    </div>
-    <button class="btn btn-primary" style="width:100%" onclick="doLogin()">Entrar</button>
-    <div class="login-error" id="loginErr">Senha incorreta.</div>
+<div class="login-wrap" id="loginWrap">
+  <div class="login-card">
+    <div class="login-logo"><div class="login-dot"></div>Primum Intelligence</div>
+    <div class="login-sub">Acesso restrito — time interno</div>
+    <div class="login-label">Senha de acesso</div>
+    <input class="login-input" type="password" id="loginPass" placeholder="••••••••••••" />
+    <button class="login-btn" onclick="doLogin()">Entrar →</button>
+    <div class="login-error" id="loginError">Senha incorreta</div>
   </div>
 </div>
 
-<!-- APP -->
-<div id="app">
-  <div class="topbar">
-    <div class="topbar-logo">Primum <span>· Lead Intelligence</span></div>
-    <div class="topbar-search">
-      <input type="text" id="searchBar" placeholder="HubSpot Contact ID..."
-             onkeydown="if(event.key==='Enter')loadFromBar()">
-      <button class="btn btn-primary" onclick="loadFromBar()">Buscar</button>
-    </div>
-    <div class="topbar-right">
-      <button class="btn btn-ghost" onclick="loadDemo()">Demo</button>
-    </div>
+<!-- TOPBAR -->
+<div class="topbar" id="appWrap" style="display:none">
+  <div class="logo"><div class="logo-dot"></div>Primum Intelligence</div>
+  <div class="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input type="text" id="searchInput" placeholder="ID ou email do contato..." />
   </div>
-  <div id="content">
-    <div class="empty" style="padding:80px">Digite um Contact ID acima para carregar o lead.</div>
+  <div class="topbar-right">
+    <button class="btn primary" onclick="loadFromSearch()">Carregar →</button>
+    <button class="btn" onclick="doLogout()">Sair</button>
   </div>
+</div>
+
+<!-- MAIN -->
+<div class="main" id="mainArea" style="display:none">
+  <div id="leftCol"></div>
+  <div id="rightCol" class="right-col"></div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ═══════════════════════════════════════════════════
-// CONFIG
-// ═══════════════════════════════════════════════════
-const PROXY       = 'https://primum-proxy.vinicius-reis.workers.dev';
-const ACCESS_HASH = '45f48424'; // hash simples de Primum@2026
-
-// ═══════════════════════════════════════════════════
-// STAGE MAPS
-// ═══════════════════════════════════════════════════
-const LEAD_STAGES = {
-  '1087683153':'Prospecção',
-  '1087683154':'Abordagem',
-  '1087683156':'Qualificação',
-  '1269135952':'Reunião Agendada',
-  '1269320048':'Perdido',
-};
-const DEAL_STAGES = {
-  '1269123352':'Sessão Estratégica',
-  '1269123353':'Pós-Sessão',
-  '1269225336':'Venda/Matrícula',
-  '1269225337':'Perdido',
-};
-const LEAD_ORDER = ['1087683153','1087683154','1087683156','1269135952','1269320048'];
-const DEAL_ORDER = ['1269123352','1269123353','1269225336','1269225337'];
-
-const LEAD_TIME_KEY = {
-  '1087683153':'hs_v2_cumulative_time_in_1087683153',
-  '1087683154':'hs_v2_cumulative_time_in_1087683154',
-  '1087683156':'hs_v2_cumulative_time_in_1087683156',
-};
-const DEAL_TIME_KEY = {
-  '1269123352':'hs_v2_cumulative_time_in_1269123352',
-  '1269123353':'hs_v2_cumulative_time_in_1269123353',
-};
-
-// Propriedades de etapa — todas no objeto lead
-const STAGE_PROPS = [
-  {key:'quantidade_de_followup',         label:'Follow-ups'       },
-  {key:'ano_que_vai_prestar_a_prova',    label:'Ano da prova'     },
-  {key:'em_que_que_voce_se_forma',       label:'Formatura em'     },
-  {key:'instituicao_de_ensino_superior', label:'Instituição'      },
-  {key:'prova_pretendida',               label:'Prova pretendida' },
-  {key:'aristo_produto_pretendido',      label:'Produto Aristo'   },
-  {key:'temperatura_do_lead',            label:'Temperatura'      },
-  {key:'renovacao',                      label:'Renovação'        },
-  {key:'status_da_reuniao',              label:'Status reunião'   },
-  {key:'status_do_negocio',              label:'Status negócio'   },
-  {key:'nivel_de_urgencia',              label:'Urgência'         },
-  {key:'bant_autoridade',                label:'BANT Autoridade'  },
-  {key:'bant__necessidade',              label:'BANT Necessidade' },
-  {key:'link_de_pagamento_enviado',      label:'Link pagamento'   },
-  {key:'motivo_do_noshow',               label:'Motivo no-show'   },
-  {key:'retornar_para_sdr',              label:'Retornar ao SDR'  },
-];
+const PROXY = 'https://primum-proxy.vinicius-reis.workers.dev';
+const ACCESS_HASH = '45f48424';
 
 const BRANDS = {
-  BWS:   {label:'BWS',   color:'#38bdf8',bg:'rgba(56,189,248,.1)' },
-  ARISTO:{label:'Aristo',color:'#f5a623',bg:'rgba(245,166,35,.1)' },
-  MEDQ:  {label:'MedQ',  color:'#a78bfa',bg:'rgba(167,139,250,.1)'},
-  EDUQ:  {label:'EDUQ',  color:'#34d399',bg:'rgba(52,211,153,.1)' },
-  CBI:   {label:'CBI',   color:'#f472b6',bg:'rgba(244,114,182,.1)'},
-  OUTRO: {label:'Outro', color:'#6b7280',bg:'rgba(107,114,128,.1)'},
+  BWS:   {color:'#7c6af7',bg:'rgba(124,106,247,.12)',label:'BWS'},
+  MDQ:   {color:'#4ecdc4',bg:'rgba(78,205,196,.12)',label:'MedQ'},
+  MEDQ:  {color:'#4ecdc4',bg:'rgba(78,205,196,.12)',label:'MedQ'},
+  ARISTO:{color:'#f7c948',bg:'rgba(247,201,72,.12)',label:'Aristo'},
+  EDUQ:  {color:'#f7934c',bg:'rgba(247,147,76,.12)',label:'EDUQ'},
+  CBI:   {color:'#c97cf7',bg:'rgba(201,124,247,.12)',label:'CBI'},
+  BBI:   {color:'#f76a6a',bg:'rgba(247,106,106,.12)',label:'BBI'},
+  TS:    {color:'#5cf0a0',bg:'rgba(92,240,160,.12)',label:'TS'},
+  OUTRO: {color:'#6b6b80',bg:'rgba(107,107,128,.12)',label:'Outro'},
 };
 
-// ═══════════════════════════════════════════════════
+const ROTULO_PROPS = {
+  BWS:   'bws_rotulo_leadscore',
+  CBI:   'cbi_rotulo_leadscore',
+  ARISTO:'aristo_rotulo_leadscore',
+  EDUQ:  'eduq_rotulo_leadscore',
+  BBI:   'bbi_rotulo_leadscore',
+  TS:    'ts_rotulo_leadscore',
+};
+
+const LIFECYCLE_ORDER = [
+  {key:'subscriber',   label:'Assinante',   icon:'📋'},
+  {key:'lead',         label:'Lead',         icon:'🎯'},
+  {key:'marketingqualifiedlead', label:'MQL', icon:'📈'},
+  {key:'salesqualifiedlead',     label:'SQL', icon:'💡'},
+  {key:'opportunity',  label:'Oportunidade', icon:'🔥'},
+  {key:'customer',     label:'Cliente',      icon:'✅'},
+];
+
 // AUTH
-// ═══════════════════════════════════════════════════
-function hashStr(s){
-  let h=0;
-  for(let i=0;i<s.length;i++) h=(Math.imul(31,h)+s.charCodeAt(i))|0;
-  return(h>>>0).toString(16).slice(0,8);
-}
+function simpleHash(str){let h=0;for(let i=0;i<str.length;i++){h=((h<<5)-h)+str.charCodeAt(i);h|=0;}return Math.abs(h).toString(16);}
+
 function doLogin(){
-  const v=document.getElementById('passInput').value;
-  if(hashStr(v)===ACCESS_HASH){
-    document.getElementById('loginScreen').style.display='none';
-    document.getElementById('app').style.display='block';
-    const id=new URLSearchParams(location.search).get('contactId');
-    if(id){document.getElementById('searchBar').value=id;load(id);}
+  const pass=document.getElementById('loginPass').value;
+  if(simpleHash(pass)===ACCESS_HASH){
+    sessionStorage.setItem('pi_auth','1');
+    document.getElementById('loginWrap').style.display='none';
+    document.getElementById('appWrap').style.display='flex';
+    document.getElementById('mainArea').style.display='grid';
+    const p=new URLSearchParams(window.location.search);
+    const cid=p.get('contactId')||p.get('contact_id');
+    const did=p.get('dealId')||p.get('deal_id');
+    if(cid){document.getElementById('searchInput').value=cid;loadContact(cid);}
+    else if(did)loadByDeal(did);
+    else showEmpty();
   } else {
-    document.getElementById('loginErr').style.display='block';
+    document.getElementById('loginError').style.display='block';
+    document.getElementById('loginPass').style.borderColor='var(--danger)';
+    setTimeout(()=>{document.getElementById('loginError').style.display='none';document.getElementById('loginPass').style.borderColor='';},2500);
   }
 }
 
-// ═══════════════════════════════════════════════════
+function doLogout(){sessionStorage.removeItem('pi_auth');location.reload();}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+  document.getElementById('searchInput').addEventListener('keydown',e=>{if(e.key==='Enter')loadFromSearch();});
+  if(sessionStorage.getItem('pi_auth')==='1'){
+    document.getElementById('loginWrap').style.display='none';
+    document.getElementById('appWrap').style.display='flex';
+    document.getElementById('mainArea').style.display='grid';
+    const p=new URLSearchParams(window.location.search);
+    const cid=p.get('contactId')||p.get('contact_id');
+    const did=p.get('dealId')||p.get('deal_id');
+    if(cid){document.getElementById('searchInput').value=cid;loadContact(cid);}
+    else if(did)loadByDeal(did);
+    else showEmpty();
+  }
+});
+
 // UTILS
-// ═══════════════════════════════════════════════════
-const fmtDate=iso=>iso?new Date(iso).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'}):'—';
-const fmtTime=iso=>iso?new Date(iso).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'';
-function fmtMs(ms){
-  if(!ms||isNaN(ms)||ms<=0) return null;
-  const d=Math.floor(ms/86400000);
-  return d===0?'< 1d':d===1?'1 dia':`${d} dias`;
-}
-const initials=(a,b)=>((a||'')[0]||'')+((b||'')[0]||'');
-function detectBrand(t){
+function detectBrandKey(t){
   if(!t)return'OUTRO';
   const u=t.toUpperCase();
-  if(u.includes('BWS')||u.includes('B.W.S'))return'BWS';
-  if(u.includes('ARISTO'))return'ARISTO';
-  if(u.includes('MEDQ')||u.includes('MDQ'))return'MEDQ';
-  if(u.includes('EDUQ'))return'EDUQ';
-  if(u.includes('CBI'))return'CBI';
+  if(u.includes('[BWS]')||u.includes('BWS'))return'BWS';
+  if(u.includes('[MDQ]')||u.includes('MEDQ')||u.includes('MED Q'))return'MDQ';
+  if(u.includes('[ARISTO]')||u.includes('ARISTO'))return'ARISTO';
+  if(u.includes('[EDUQ]')||u.includes('EDUQ'))return'EDUQ';
+  if(u.includes('[CBI]')||u.includes('CBI'))return'CBI';
+  if(u.includes('[BBI]')||u.includes('BBI'))return'BBI';
+  if(u.includes('[TS]'))return'TS';
   return'OUTRO';
 }
-function isAristo(cp,leads,deals){
-  if((cp.grupo_primum||'').toUpperCase().includes('ARISTO'))return true;
-  for(const l of leads){const lp=l.properties||{};if((lp.hs_pipeline||'').toLowerCase().includes('aristo'))return true;}
-  for(const d of deals){const dp=d.properties||{};if((dp.pipeline||'').toLowerCase().includes('aristo'))return true;}
-  return false;
-}
-function showToast(m){
-  const t=document.getElementById('toast');
-  t.textContent=m;t.style.display='block';
-  setTimeout(()=>t.style.display='none',5000);
-}
-function row(label,value,cls=''){
-  const bad=['','null','undefined','-','0','false'];
-  if(!value||bad.includes(String(value).trim()))return'';
-  return`<div class="prop-row"><span class="pk">${label}</span><span class="pv ${cls}">${value}</span></div>`;
-}
+function getBrand(t){return BRANDS[detectBrandKey(t)]||BRANDS.OUTRO;}
+function fmt(v,fb='—'){return(v===null||v===undefined||v==='')? fb:v;}
+function fmtDate(iso){if(!iso)return'—';return new Date(iso).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'});}
+function fmtDateShort(iso){if(!iso)return'';return new Date(iso).toLocaleDateString('pt-BR',{day:'2-digit',month:'short'});}
+function initials(n){if(!n)return'?';return n.split(' ').slice(0,2).map(w=>w[0]||'').join('').toUpperCase();}
+function tierLabel(t){return{tier_1:'Muito Alto',tier_2:'Alto',tier_3:'Médio',tier_4:'Baixo',closed_won:'Cliente'}[t]||t||'—';}
+function tierClass(t){return{tier_1:'priority-tier1',tier_2:'priority-tier2',tier_3:'priority-tier3',tier_4:'priority-tier4',closed_won:'priority-tier1'}[t]||'priority-tier4';}
+function lcLabel(s){return{subscriber:'Assinante',lead:'Lead',marketingqualifiedlead:'MQL',salesqualifiedlead:'SQL',opportunity:'Oportunidade',customer:'Cliente',evangelist:'Promotor',other:'Outro'}[s]||s||'—';}
+function lsLabel(s){return{NEW:'Novo',OPEN:'Aberto',IN_PROGRESS:'Em progresso',OPEN_DEAL:'Deal Aberto',UNQUALIFIED:'Desqualificado',ATTEMPTED_TO_CONTACT:'Tentou contato',CONNECTED:'Conectado',BAD_TIMING:'Timing ruim'}[s]||s||'—';}
+function srcLabel(s){return{PAID_SOCIAL:'Social Pago',ORGANIC_SEARCH:'Busca Orgânica',PAID_SEARCH:'Busca Paga',EMAIL_MARKETING:'Email Marketing',SOCIAL_MEDIA:'Social Orgânico',REFERRALS:'Referência',DIRECT_TRAFFIC:'Tráfego Direto',OFFLINE:'Offline',OTHER_CAMPAIGNS:'Outras Campanhas'}[s]||s||'—';}
+function rotuloClass(v){if(!v)return'rotulo-unknown';const u=v.toUpperCase();if(u.includes('ALTA'))return'rotulo-alta';if(u.includes('MÉDIA')||u.includes('MEDIA'))return'rotulo-media';if(u.includes('BAIXA'))return'rotulo-baixa';return'rotulo-unknown';}
+function showToast(msg,type='error'){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type}`;t.style.display='block';setTimeout(()=>{t.style.display='none';},4000);}
 
-// ═══════════════════════════════════════════════════
-// API — usa proxy Cloudflare (sem token no browser)
-// ═══════════════════════════════════════════════════
+// API
 async function hs(path){
   const r=await fetch(`${PROXY}${path}`,{headers:{'Content-Type':'application/json'}});
-  if(!r.ok)throw new Error(`API ${r.status}: ${path}`);
+  if(!r.ok)throw new Error(`API ${r.status}`);
   return r.json();
 }
 async function hsPost(path,body){
   const r=await fetch(`${PROXY}${path}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-  if(!r.ok)throw new Error(`API ${r.status}: ${path}`);
+  if(!r.ok)throw new Error(`API ${r.status}`);
   return r.json();
 }
+async function getAssocIds(contactId,type){
+  try{const d=await hs(`/crm/v4/objects/contacts/${contactId}/associations/${type}?limit=50`);return(d.results||[]).map(r=>String(r.toObjectId||r.id)).filter(Boolean);}catch{return[];}
+}
 
-// ═══════════════════════════════════════════════════
 // LOAD
-// ═══════════════════════════════════════════════════
-function loadFromBar(){
-  const id=document.getElementById('searchBar').value.trim();
-  if(id)load(id);
+function loadFromSearch(){const v=document.getElementById('searchInput').value.trim();if(!v){showToast('Informe um ID ou email');return;}loadContact(v);}
+
+async function loadByDeal(dealId){
+  try{const a=await hs(`/crm/v4/objects/deals/${dealId}/associations/contacts?limit=1`);const cid=(a.results||[])[0]?.toObjectId;if(cid)loadContact(String(cid));else showToast('Nenhum contato associado');}
+  catch{showToast('Erro ao carregar negócio');}
 }
 
-async function load(cid){
-  document.getElementById('searchBar').value=cid;
-  document.getElementById('content').innerHTML='<div class="loader"><div class="spinner"></div> Carregando contato...</div>';
+async function loadContact(input){
+  if(!input)input=document.getElementById('searchInput').value.trim();
+  if(!input)return;
+  showLoading();
   try{
-    const cProps=[
-      'firstname','lastname','email','phone',
-      'lifecyclestage','lead_status',
-      'hs_predictivecontactscore_v2','hs_predictivescoringtier',
-      'nome_do_ultimo_formulario','hs_analytics_source',
-      'createdate','notes_last_updated','num_associated_deals',
-      'perfil','grupo_primum','produtos_primum','historico_cursos_interesse',
-      'hs_email_open','hs_email_click','hs_email_replied','hs_email_bounce',
-    ].join(',');
+    let contactId=input;
+    if(!/^\d+$/.test(input)){
+      const s=await hsPost('/crm/v3/objects/contacts/search',{filterGroups:[{filters:[{propertyName:'email',operator:'EQ',value:input}]}],properties:['email'],limit:1});
+      if(!s.results?.length)throw new Error('Contato não encontrado');
+      contactId=s.results[0].id;
+    }
 
-    const contact=await hs(`/crm/v3/objects/contacts/${cid}?properties=${cProps}`);
+    const rotuloProps=Object.values(ROTULO_PROPS).join(',');
+    const PROPS=['firstname','lastname','email','phone','mobilephone','lifecyclestage','hs_lead_status','hs_predictivescoringtier','hs_predictivecontactscore_v2','hs_latest_source','hs_latest_source_data_1','hs_email_open','hs_email_click','hs_email_bounce','hs_sales_email_last_opened','hs_sales_email_last_clicked','hs_sales_email_last_replied','notes_last_updated','num_associated_deals','hs_analytics_num_visits','hs_analytics_num_page_views','grupo_primum','produtos_primum','historico_cursos_interesse','nome_do_ultimo_formulario','perfil_medico','createdate','lastmodifieddate','hs_v2_date_entered_lead','hs_v2_date_entered_marketingqualifiedlead','hs_v2_date_entered_salesqualifiedlead','hs_v2_date_entered_opportunity','hs_v2_date_entered_customer'].join(',');
 
-    const[la,da,ma,na]=await Promise.all([
-      hs(`/crm/v3/objects/contacts/${cid}/associations/leads`).catch(()=>({results:[]})),
-      hs(`/crm/v3/objects/contacts/${cid}/associations/deals`).catch(()=>({results:[]})),
-      hs(`/crm/v3/objects/contacts/${cid}/associations/meetings`).catch(()=>({results:[]})),
-      hs(`/crm/v3/objects/contacts/${cid}/associations/notes`).catch(()=>({results:[]})),
+    const [contact,actIds,leadIds,dealIds,meetingIds]=await Promise.all([
+      hs(`/crm/v3/objects/contacts/${contactId}?properties=${PROPS},${rotuloProps}`),
+      getAssocIds(contactId,'activities'),
+      getAssocIds(contactId,'leads'),
+      getAssocIds(contactId,'deals'),
+      getAssocIds(contactId,'meetings'),
     ]);
 
-    const ids=a=>(a.results||[]).map(x=>x.id||x.toObjectId).filter(Boolean);
-    const[leadIds,dealIds,meetIds,noteIds]=[ids(la),ids(da),ids(ma),ids(na)];
-
-    const leadProps=[
-      'hs_lead_name','hs_pipeline','hs_pipeline_stage','createdate',
-      ...STAGE_PROPS.map(s=>s.key),
-      ...Object.values(LEAD_TIME_KEY),
-    ];
-    const dealProps=[
-      'dealname','pipeline','dealstage','amount','createdate',
-      ...Object.values(DEAL_TIME_KEY),
-    ];
-
-    const[leads,deals,meetings,notes]=await Promise.all([
-      leadIds.length?hsPost('/crm/v3/objects/leads/batch/read',{properties:leadProps,inputs:leadIds.slice(0,20).map(id=>({id}))}).then(d=>d.results||[]):Promise.resolve([]),
-      dealIds.length?hsPost('/crm/v3/objects/deals/batch/read',{properties:dealProps,inputs:dealIds.slice(0,20).map(id=>({id}))}).then(d=>d.results||[]):Promise.resolve([]),
-      meetIds.length?hsPost('/crm/v3/objects/meetings/batch/read',{properties:['hs_meeting_title','hs_timestamp','hs_meeting_start_time','hs_createdate','hs_meeting_outcome'],inputs:meetIds.slice(0,20).map(id=>({id}))}).then(d=>d.results||[]):Promise.resolve([]),
-      noteIds.length?hsPost('/crm/v3/objects/notes/batch/read',{properties:['hs_note_body','hs_body_preview','hs_timestamp'],inputs:noteIds.slice(0,30).map(id=>({id}))}).then(d=>d.results||[]):Promise.resolve([]),
+    const [activities,leads,deals,meetings]=await Promise.all([
+      actIds.length?hsPost('/crm/v3/objects/activities/batch/read',{properties:['hs_activity_type','hs_body_preview','hs_timestamp','hs_title','hs_note_body','hs_email_subject'],inputs:actIds.slice(0,60).map(id=>({id}))}).then(d=>(d.results||[]).sort((a,b)=>(b.properties?.hs_timestamp||'').localeCompare(a.properties?.hs_timestamp||''))):Promise.resolve([]),
+      leadIds.length?hsPost('/crm/v3/objects/leads/batch/read',{properties:['hs_lead_name','hs_pipeline','hs_pipeline_stage','createdate','quantidade_de_followup','ano_que_vai_prestar_a_prova','em_que_ano_voce_se_forma','instituicao_de_ensino_superior','prova_pretendida','aristo_produto_pretendido','temperatura_do_lead','hs_v2_cumulative_time_in_1087683153','hs_v2_cumulative_time_in_1087683154','hs_v2_cumulative_time_in_1087683156'],inputs:leadIds.slice(0,20).map(id=>({id}))}).then(d=>d.results||[]):Promise.resolve([]),
+      dealIds.length?hsPost('/crm/v3/objects/deals/batch/read',{properties:['dealname','pipeline','dealstage','amount','createdate','zenvia___registro_de_conversa','renovacao','status_da_reuniao','status_do_negocio','nivel_de_urgencia','bant_autoridade','bant__necessidade','link_de_pagamento_enviado','motivo_do_noshow','retornar_para_sdr','hs_v2_cumulative_time_in_1269123352','hs_v2_cumulative_time_in_1269123353'],inputs:dealIds.slice(0,20).map(id=>({id}))}).then(d=>d.results||[]):Promise.resolve([]),
+      meetingIds.length?hsPost('/crm/v3/objects/meetings/batch/read',{properties:['hubspot_owner_id','hs_timestamp','hs_meeting_start_time','hs_createdate','hs_meeting_title','hs_meeting_outcome'],inputs:meetingIds.slice(0,20).map(id=>({id}))}).then(d=>(d.results||[]).sort((a,b)=>(b.properties?.hs_meeting_start_time||'').localeCompare(a.properties?.hs_meeting_start_time||''))):Promise.resolve([]),
     ]);
 
-    render(contact,leads,deals,meetings,notes);
-  }catch(err){
-    showToast(err.message);
-    document.getElementById('content').innerHTML=`<div class="empty">❌ ${err.message}</div>`;
-  }
+    render(contact,activities,leads,deals,meetings);
+  }catch(err){showToast(err.message);showEmpty();}
 }
 
-// ═══════════════════════════════════════════════════
-// DEMO
-// ═══════════════════════════════════════════════════
-function loadDemo(){
-  const t=n=>new Date(Date.now()-n*86400000).toISOString();
-  const contact={id:'demo',properties:{
-    firstname:'Giuliana',lastname:'Baseggio',email:'giubaseggiosouza@hotmail.com',phone:'51999972729',
-    lifecyclestage:'opportunity',hs_predictivecontactscore_v2:'5.29',hs_predictivescoringtier:'tier_1',
-    nome_do_ultimo_formulario:'Meetings Link: madureira-reis/sessao-estrategica-aristo',
-    hs_analytics_source:'PAID_SEARCH',createdate:t(75),notes_last_updated:t(2),
-    num_associated_deals:'1',grupo_primum:'ARISTO',
-    hs_email_open:'4',hs_email_click:'2',hs_email_replied:'0',hs_email_bounce:'0',
-  }};
-  const leads=[{id:'l1',properties:{
-    hs_lead_name:'Giuliana – R1 Extensivo Direção 2026 – Aristo',
-    hs_pipeline:'SDR Aristo',hs_pipeline_stage:'1269135952',createdate:t(70),
-    quantidade_de_followup:'3',ano_que_vai_prestar_a_prova:'2027',
-    em_que_que_voce_se_forma:'2026',instituicao_de_ensino_superior:'UNIFESP',
-    prova_pretendida:'Revalida',aristo_produto_pretendido:'R1 Extensivo',
-    temperatura_do_lead:'Quente',status_da_reuniao:'Realizada',
-    status_do_negocio:'Em negociação',nivel_de_urgencia:'Alta',
-    bant_autoridade:'Sim',bant__necessidade:'Aprovação no R1',
-    hs_v2_cumulative_time_in_1087683153:String(4*86400000),
-    hs_v2_cumulative_time_in_1087683154:String(7*86400000),
-    hs_v2_cumulative_time_in_1087683156:String(5*86400000),
-  }}];
-  const deals=[{id:'d1',properties:{
-    dealname:'Giuliana – R1 Extensivo Direção 2026 – Aristo',
-    pipeline:'Aristo - Closers',dealstage:'1269123353',amount:'3200',createdate:t(30),
-    hs_v2_cumulative_time_in_1269123352:String(8*86400000),
-    hs_v2_cumulative_time_in_1269123353:String(3*86400000),
-  }}];
-  const meetings=[{id:'m1',properties:{
-    hs_meeting_title:'Sessão Estratégica – Giuliana',
-    hs_timestamp:t(3),hs_meeting_start_time:t(3),hs_createdate:t(5),
-    hs_meeting_outcome:'COMPLETED',
-  }}];
-  render(contact,leads,deals,meetings,[]);
-}
-
-// ═══════════════════════════════════════════════════
 // RENDER
-// ═══════════════════════════════════════════════════
-function render(contact,leads,deals,meetings,notes){
+function render(contact,activities,leads,deals,meetings){
   const p=contact.properties||{};
+  const name=[p.firstname,p.lastname].filter(Boolean).join(' ')||'Sem nome';
+  const score=Math.round(parseFloat(p.hs_predictivecontactscore_v2||0)*100);
+  const tier=p.hs_predictivescoringtier;
+  const scoreColor=score>60?'var(--success)':score>30?'var(--accent3)':'var(--accent)';
+  const circ=2*Math.PI*28;
 
-  // find aristo lead & deal
-  const aristoLead=leads.find(l=>{
-    const lp=l.properties||{};
-    return(lp.hs_pipeline||'').toLowerCase().includes('aristo')||
-           LEAD_ORDER.includes(lp.hs_pipeline_stage||'');
-  });
-  const aristoDeal=deals.find(d=>{
-    const dp=d.properties||{};
-    return(dp.pipeline||'').toLowerCase().includes('aristo')||
-           DEAL_ORDER.includes(dp.dealstage||'');
-  });
+  // Detect Aristo — must be before left card HTML
+  const isAristo=isAristoBrand(p,leads,deals);
+  const {sdrLead:_sdrL,closerDeal:_closerD}=isAristo?getAristoSidebarProps(leads,deals):{sdrLead:null,closerDeal:null};
+  const lp_side=_sdrL?.properties||{};
+  const dp_side=_closerD?.properties||{};
 
-  const lp=aristoLead?.properties||{};
-  const dp=aristoDeal?.properties||{};
-  const leadStage=lp.hs_pipeline_stage||null;
-  const dealStage=dp.dealstage||null;
+  // Brands
+  const brandSet=new Set();
+  if(p.grupo_primum)p.grupo_primum.split(';').forEach(b=>brandSet.add(b.trim().toUpperCase()));
+  activities.forEach(a=>{const b=detectBrandKey((a.properties?.hs_body_preview||'')+(a.properties?.hs_title||''));if(b!=='OUTRO')brandSet.add(b);});
+  leads.forEach(l=>{const b=detectBrandKey(l.properties?.hs_lead_name||'');if(b!=='OUTRO')brandSet.add(b);});
 
-  const inClosers=!!aristoDeal;
-  const activeStageName=inClosers?(DEAL_STAGES[dealStage]||'—'):(LEAD_STAGES[leadStage]||'—');
-  const isLost=activeStageName==='Perdido';
-  const isWon=activeStageName==='Venda/Matrícula';
-  const hasAristo=isAristo(p,leads,deals);
+  // Rótulos por marca da unidade de negócio
+  const activeUnits=p.grupo_primum?p.grupo_primum.split(';').map(b=>b.trim().toUpperCase()):[];
+  const rotulosHtml=activeUnits.filter(u=>ROTULO_PROPS[u]).map(u=>{
+    const prop=ROTULO_PROPS[u];
+    const val=p[prop]||'';
+    const br=BRANDS[u]||BRANDS.OUTRO;
+    return`<div class="rotulo-row">
+      <span class="rotulo-brand" style="color:${br.color}">${br.label}</span>
+      <span class="rotulo-badge ${rotuloClass(val)}">${val||'—'}</span>
+    </div>`;
+  }).join('');
 
-  let activeTimeMs=null;
-  if(inClosers&&dealStage&&DEAL_TIME_KEY[dealStage])activeTimeMs=parseFloat(dp[DEAL_TIME_KEY[dealStage]]);
-  else if(aristoLead&&leadStage&&LEAD_TIME_KEY[leadStage])activeTimeMs=parseFloat(lp[LEAD_TIME_KEY[leadStage]]);
+  // LEFT
+  document.getElementById('leftCol').innerHTML=`
+    <div class="contact-card">
+      <div class="contact-header">
+        <div class="contact-avatar">${initials(name)}</div>
+        <div class="contact-name">${name}</div>
+        <div class="contact-email">${fmt(p.email)}</div>
+        ${tier?`<div class="priority-badge ${tierClass(tier)}">${tierLabel(tier)}</div>`:''}
+      </div>
+      <div class="score-section">
+        <div class="score-ring">
+          <svg width="64" height="64" viewBox="0 0 64 64">
+            <circle class="score-ring-bg" cx="32" cy="32" r="28"/>
+            <circle class="score-ring-fill" cx="32" cy="32" r="28" stroke="${scoreColor}" stroke-dasharray="${circ}" stroke-dashoffset="${circ*(1-score/100)}"/>
+          </svg>
+          <div class="score-number" style="color:${scoreColor}">${score}%</div>
+        </div>
+        <div class="score-info">
+          <div class="score-label">Likelihood to Close</div>
+          <div class="score-value" style="color:${scoreColor}">${score}%</div>
+          <div class="score-sub">próximos 90 dias</div>
+        </div>
+      </div>
+      ${rotulosHtml?`<div class="rotulo-section"><div class="rotulo-title">Rótulo por marca</div><div class="rotulo-list">${rotulosHtml}</div></div>`:''}
+      <div class="props-list">
+        ${propRow('Telefone',p.mobilephone||p.phone)}
+        ${propRow('Perfil',p.perfil_medico)}
+        ${propRow('Lifecycle',lcLabel(p.lifecyclestage))}
+        ${propRow('Lead Status',lsLabel(p.hs_lead_status))}
+        ${propRow('Último Form.',p.nome_do_ultimo_formulario,true)}
+        ${propRow('Fonte',srcLabel(p.hs_latest_source))}
+        ${propRow('Criado em',fmtDate(p.createdate))}
+        ${propRow('Últ. atividade',fmtDate(p.notes_last_updated))}
+        ${propRow('Negócios',p.num_associated_deals||'0')}
+      </div>
+      ${isAristo?`<div style="padding:6px 20px 2px;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;border-top:1px solid var(--border);margin-top:4px;padding-top:12px">Qualificação Aristo</div>
+        <div class="props-list" style="border-top:none">
+          ${[
+            ['Follow-ups',lp_side.quantidade_de_followup],
+            ['Temperatura',lp_side.temperatura_do_lead],
+            ['Ano da prova',lp_side.ano_que_vai_prestar_a_prova],
+            ['Formação em',lp_side.em_que_ano_voce_se_forma],
+            ['Instituição',lp_side.instituicao_de_ensino_superior],
+            ['Prova pretendida',lp_side.prova_pretendida],
+            ['Produto pretendido',lp_side.aristo_produto_pretendido],
+          ].filter(r=>r[1]).map(r=>propRow(r[0],r[1])).join('')}
+        </div>`:'' }
+      ${isAristo&&(dp_side.status_da_reuniao||dp_side.status_do_negocio)?`<div style="padding:6px 20px 2px;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Pós-Sessão</div>
+        <div class="props-list" style="border-top:none">
+          ${[
+            ['Status reunião',dp_side.status_da_reuniao],
+            ['Status negócio',dp_side.status_do_negocio],
+            ['Urgência',dp_side.nivel_de_urgencia],
+            ['Fala c/ decisor?',dp_side.bant_autoridade],
+            ['Deadline',dp_side.bant__necessidade],
+            ['Renovação',dp_side.renovacao],
+            ['Motivo no-show',dp_side.motivo_do_noshow],
+            ['Retornar SDR',dp_side.retornar_para_sdr],
+          ].filter(r=>r[1]).map(r=>propRow(r[0],r[1])).join('')}
+        </div>`:''}
+      ${brandSet.size?`<div style="padding:6px 20px 2px;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Marcas</div>
+        <div class="brand-tags">${[...brandSet].map(b=>{const br=BRANDS[b]||BRANDS.OUTRO;return`<span class="brand-tag" style="background:${br.bg};color:${br.color};border:1px solid ${br.color}33">${br.label}</span>`;}).join('')}</div>`:''}
+      <div class="status-row">
+        ${p.hs_sales_email_last_opened?`<div class="status-chip"><div class="chip-dot" style="background:var(--success)"></div>Abriu email ${fmtDateShort(p.hs_sales_email_last_opened)}</div>`:''}
+        ${p.hs_sales_email_last_clicked?`<div class="status-chip"><div class="chip-dot" style="background:var(--accent2)"></div>Clicou ${fmtDateShort(p.hs_sales_email_last_clicked)}</div>`:''}
+        ${p.hs_sales_email_last_replied?`<div class="status-chip"><div class="chip-dot" style="background:var(--accent3)"></div>Respondeu ${fmtDateShort(p.hs_sales_email_last_replied)}</div>`:''}
+        ${parseInt(p.hs_email_bounce||0)>0?`<div class="status-chip"><div class="chip-dot" style="background:var(--danger)"></div>${p.hs_email_bounce} bounce(s)</div>`:''}
+      </div>
+    </div>`;
 
-  // score
-  const raw=parseFloat(p.hs_predictivecontactscore_v2||0);
-  const score=raw>1?Math.min(Math.round(raw),999):Math.round(raw*100);
-  const pct=Math.min(raw>1?raw/10:raw*100,100);
-  const sc=pct>60?'#22c55e':pct>30?'#f5a623':'#ef4444';
-  const C=2*Math.PI*16;
-  const dash=C*(pct/100);
-  const tierMap={tier_1:['MUITO ALTO','pv1'],tier_2:['ALTO','pv2'],tier_3:['MÉDIO','pv3'],tier_4:['BAIXO','pv4']};
-  const[prioLbl,prioCls]=tierMap[p.hs_predictivescoringtier||'']||['—','pv4'];
-  const lcMap={lead:'Lead',marketingqualifiedlead:'MQL',salesqualifiedlead:'SQL',opportunity:'Oportunidade',customer:'Cliente',subscriber:'Assinante',other:'Outro'};
+  // Detect Aristo (already declared above)
 
-  // stage props with value
-  const stageData=STAGE_PROPS.filter(s=>{
-    const v=lp[s.key];
-    return v&&v!=='null'&&v!=='undefined'&&v!=='';
-  });
+  // RIGHT
+  const right=document.getElementById('rightCol');
+  right.innerHTML=
+    (isAristo?buildAristoFunnel(leads,deals):buildFunnel(p))+
+    (meetings.length?buildMeetings(meetings):'')+
+    buildCourses(p,leads,activities)+
+    buildTimeline(activities)+
+    (deals.length?buildDeals(deals):'')+
+    buildZenvia(deals)+
+    buildEngagement(p);
+}
 
-  function tempCls(v){
-    const u=(v||'').toLowerCase();
-    if(u.includes('quente'))return'hot';
-    if(u.includes('morn'))return'warm';
-    if(u.includes('frio'))return'cold';
+function isAristoBrand(p,leads,deals){
+  const grupo=(p.grupo_primum||'').toUpperCase();
+  if(grupo.includes('ARISTO'))return true;
+  if(leads.some(l=>(l.properties?.hs_pipeline||'').toLowerCase().includes('aristo')))return true;
+  if(deals.some(d=>(d.properties?.pipeline||'').toLowerCase().includes('aristo')))return true;
+  return false;
+}
+
+// Returns Aristo lead/deal props for left card injection
+function getAristoSidebarProps(leads,deals){
+  const sdrLead=leads.filter(l=>(l.properties?.hs_pipeline||'').toLowerCase().includes('aristo')).sort((a,b)=>(b.properties?.createdate||'').localeCompare(a.properties?.createdate||''))[0];
+  const closerDeal=deals.filter(d=>(d.properties?.pipeline||'').toLowerCase().includes('aristo')).sort((a,b)=>(b.properties?.createdate||'').localeCompare(a.properties?.createdate||''))[0];
+  return {sdrLead, closerDeal};
+}
+
+function propRow(label,value,small=false){
+  return`<div class="prop-row"><span class="prop-label">${label}</span><span class="prop-value"${small?' style="font-size:11px"':''}>${fmt(value)}</span></div>`;
+}
+
+// FUNIL GENÉRICO
+function buildFunnel(p){
+  const current=p.lifecyclestage||'';
+  const currentIdx=LIFECYCLE_ORDER.findIndex(s=>s.key===current);
+  const stages=LIFECYCLE_ORDER.map((s,i)=>{
+    let cls=i<currentIdx?'done':i===currentIdx?'current':'pending';
+    const dateKey=`hs_v2_date_entered_${s.key}`;
+    const date=p[dateKey]?fmtDateShort(p[dateKey]):'';
+    return`<div class="funnel-stage">
+      <div class="funnel-stage-inner ${cls}">
+        <div class="funnel-icon">${s.icon}</div>
+        <div class="funnel-label">${s.label}</div>
+        ${date?`<div class="funnel-date">${date}</div>`:'<div class="funnel-date">—</div>'}
+      </div>
+      <div class="funnel-arrow">›</div>
+    </div>`;
+  }).join('');
+  return`<div class="section-card">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(92,240,160,.12)">🚀</div>
+      <div class="section-title">Jornada do Lead</div>
+    </div>
+    <div class="funnel-wrap"><div class="funnel-stages">${stages}</div></div>
+  </div>`;
+}
+
+// FUNIL ARISTO
+const ARISTO_SDR_STAGES=[
+  {key:'1087683153', label:'Prospecção',        icon:'📋', timeKey:'hs_v2_cumulative_time_in_1087683153'},
+  {key:'1087683154', label:'Abordagem',          icon:'📞', timeKey:'hs_v2_cumulative_time_in_1087683154'},
+  {key:'1087683156', label:'Qualificação',       icon:'🔍', timeKey:'hs_v2_cumulative_time_in_1087683156'},
+  {key:'1269135952', label:'Reunião Agendada',   icon:'📅', timeKey:null},
+  {key:'1269320048', label:'Perdido',            icon:'❌', timeKey:null},
+];
+const ARISTO_CLOSER_STAGES=[
+  {key:'1269123352', label:'Sessão Estratégica', icon:'🎯', timeKey:'hs_v2_cumulative_time_in_1269123352'},
+  {key:'1269123353', label:'Pós-Sessão',         icon:'💡', timeKey:'hs_v2_cumulative_time_in_1269123353'},
+  {key:'1269225336', label:'Venda/Matrícula',    icon:'✅', timeKey:null},
+  {key:'1269225337', label:'Perdido',            icon:'❌', timeKey:null},
+];
+
+function normalizeStage(s){
+  if(!s)return'';
+  return s.toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g,'')
+    .replace(/[\s_-]+/g,'_')
+    .replace(/[^a-z0-9_]/g,'');
+}
+
+function msToReadable(ms){
+  if(!ms||ms<=0)return null;
+  const n=parseInt(ms);
+  const d=Math.floor(n/86400000);
+  const h=Math.floor(n/3600000);
+  if(d>=1)return d===1?'1 dia':d+' dias';
+  if(h>=1)return h===1?'1 hora':h+' horas';
+  const m=Math.floor(n/60000);
+  return m<=1?'< 1 min':m+' min';
+}
+
+function stageClass(stageKey, currentKey, allKeys){
+  const ci=allKeys.indexOf(currentKey);
+  const si=allKeys.indexOf(stageKey);
+  if(ci<0)return'pending';
+  if(si<ci)return'done';
+  if(si===ci)return'current';
+  return'pending';
+}
+
+function buildAristoFunnel(leads,deals){
+  // Pega lead SDR Aristo mais recente
+  const sdrLead=leads.filter(l=>(l.properties?.hs_pipeline||'').toLowerCase().includes('aristo')).sort((a,b)=>(b.properties?.createdate||'').localeCompare(a.properties?.createdate||''))[0];
+  const sdrStageRaw=normalizeStage(sdrLead?.properties?.hs_pipeline_stage||'');
+
+  // Pega negócio Aristo Closers mais recente
+  const closerDeal=deals.filter(d=>(d.properties?.pipeline||'').toLowerCase().includes('aristo')).sort((a,b)=>(b.properties?.createdate||'').localeCompare(a.properties?.createdate||''))[0];
+  const closerStageRaw=normalizeStage(closerDeal?.properties?.dealstage||'');
+
+  const sdrKeys=ARISTO_SDR_STAGES.map(s=>s.key);
+  const closerKeys=ARISTO_CLOSER_STAGES.map(s=>s.key);
+
+  // Match stage key
+  function matchKey(raw, keys){
+    if(!raw)return null;
+    return keys.find(k=>raw.includes(k)||k.includes(raw))||null;
+  }
+  const sdrCurrent=matchKey(sdrStageRaw,sdrKeys);
+  const closerCurrent=matchKey(closerStageRaw,closerKeys);
+
+  // Lead props for details
+  const lp=sdrLead?.properties||{};
+  const dp=closerDeal?.properties||{};
+
+  function stageDetail(key){
+    if(key==='abordagem'){
+      return detailRow('Follow-ups',lp.quantidade_de_followup);
+    }
+    if(key==='qualificacao'){
+      return[
+        detailRow('Ano da prova',lp.ano_que_vai_prestar_a_prova),
+        detailRow('Formação em',lp.em_que_ano_voce_se_forma),
+        detailRow('Instituição',lp.instituicao_de_ensino_superior),
+        detailRow('Prova pretendida',lp.prova_pretendida),
+        detailRow('Produto pretendido',lp.aristo_produto_pretendido),
+        detailRow('Temperatura',lp.temperatura_do_lead),
+      ].join('');
+    }
+    if(key==='pos_sessao'){
+      const status=dp.status_da_reuniao||'';
+      const base=[
+        detailRow('Renovação',dp.renovacao),
+        detailRow('Status da reunião',dp.status_da_reuniao),
+      ].join('');
+      const realizada=status.toLowerCase().includes('realiza')?[
+        detailRow('Status do negócio',dp.status_do_negocio),
+        detailRow('Nível de urgência',dp.nivel_de_urgencia),
+        detailRow('Fala com decisor?',dp.bant_autoridade),
+        detailRow('Deadline',dp.bant__necessidade),
+        dp.link_de_pagamento_enviado?`<div class="aristo-detail-row"><span class="aristo-detail-label">Link de pagamento</span><a href="${dp.link_de_pagamento_enviado}" target="_blank" style="color:var(--accent);font-size:12px">Abrir ↗</a></div>`:'',
+      ].join(''):'';
+      const noshow=status.toLowerCase().includes('n')&&status.toLowerCase().includes('comparec')?[
+        detailRow('Motivo no-show',dp.motivo_do_noshow),
+        detailRow('Retornar ao SDR',dp.retornar_para_sdr),
+      ].join(''):'';
+      return base+realizada+noshow;
+    }
     return'';
   }
 
-  // ─ LEFT CARD ────────────────────────────────────
-  const heroClass=isLost?'lost':isWon?'won':(hasAristo&&(leadStage||dealStage))?'':'none';
-  const pipeLabel=inClosers?'Closers Pipeline':'SDR Pipeline';
-
-  const leftHTML=`
-  <div class="left-card">
-    <div class="ch">
-      <div class="ch-top">
-        <div class="avatar">${initials(p.firstname,p.lastname)||'?'}</div>
-        <div class="ch-info">
-          <div class="ch-name">${p.firstname||''} ${p.lastname||''}</div>
-          <div class="ch-email">${p.email||'—'}</div>
+  function buildPipelineStages(stages,currentKey,allKeys,detailFn){
+    return stages.map((s,i)=>{
+      const cls=stageClass(s.key,currentKey,allKeys);
+      const detail=detailFn(s.key);
+      const eid=`aristo_${s.key}`;
+      return`<div class="aristo-stage ${cls}" onclick="toggleAristoDetail('${eid}')">
+        <div class="aristo-stage-top">
+          <span class="aristo-stage-icon">${s.icon}</span>
+          <span class="aristo-stage-label">${s.label}</span>
+          ${cls==='current'?'<span class="aristo-current-dot"></span>':''}
+          ${detail?'<span class="aristo-expand-hint">›</span>':''}
         </div>
-        ${p.hs_predictivescoringtier?`<span class="prio-badge ${prioCls}">${prioLbl}</span>`:''}
-      </div>
-      <div class="score-row">
-        <div class="ring-wrap">
-          <svg width="44" height="44" viewBox="0 0 44 44">
-            <circle class="ring-bg" cx="22" cy="22" r="16"/>
-            <circle class="ring-fill" cx="22" cy="22" r="16"
-              stroke="${sc}" stroke-dasharray="${C}" stroke-dashoffset="${C-dash}"/>
-          </svg>
-          <div class="ring-lbl" style="color:${sc}">${score}%</div>
-        </div>
-        <div>
-          <div class="s-title">Likelihood to Close</div>
-          <div class="s-val" style="color:${sc}">${score}%</div>
-          <div class="s-sub">próximos 90 dias</div>
-        </div>
-      </div>
-    </div>
-
-    ${hasAristo?`
-    <div class="stage-hero ${heroClass}">
-      <div class="sh-top">
-        <div class="sh-dot"></div>
-        <div class="sh-pipe">${pipeLabel}</div>
-      </div>
-      <div class="sh-body">
-        <div class="sh-name">${activeStageName}</div>
-        <div class="sh-time">${activeTimeMs?fmtMs(activeTimeMs)+' nesta etapa':'Tempo não disponível'}</div>
-      </div>
-    </div>`:''}
-
-    <div class="section-block" style="margin-top:${hasAristo?'4':'12'}px">
-      <div class="section-block-title">Informações</div>
-      ${row('Telefone',p.phone)}
-      ${row('Lifecycle',lcMap[p.lifecyclestage]||p.lifecyclestage)}
-      ${row('Lead Status',p.lead_status)}
-      ${row('Último Form.',p.nome_do_ultimo_formulario)}
-      ${row('Fonte',p.hs_analytics_source)}
-      ${row('Criado em',fmtDate(p.createdate))}
-      ${row('Últ. atividade',fmtDate(p.notes_last_updated))}
-      ${row('Negócios',p.num_associated_deals)}
-    </div>
-
-    ${stageData.length?`
-    <div class="section-block">
-      <div class="section-block-title">Dados da Etapa</div>
-      ${stageData.map(s=>row(s.label,lp[s.key],s.key==='temperatura_do_lead'?tempCls(lp[s.key]):'')).join('')}
-    </div>`:''}
-
-    ${(p.hs_email_open&&p.hs_email_open!=='0')?`
-    <div class="section-block">
-      <div class="section-block-title">Engajamento Email</div>
-      ${row('Abertos',p.hs_email_open)}
-      ${row('Clicados',p.hs_email_click)}
-      ${row('Respondidos',p.hs_email_replied)}
-    </div>`:''}
-
-    ${p.grupo_primum?`<div class="brand-chips">
-      <span class="bchip">${p.grupo_primum}</span>
-      ${p.hs_predictivescoringtier?`<span class="blabel">${prioLbl}</span>`:''}
-    </div>`:''}
-  </div>`;
-
-  // ─ PIPELINE ─────────────────────────────────────
-  function stepStatus(sid,currentId,order,lostId){
-    if(sid===lostId&&currentId===sid)return'lost';
-    if(sid==='1269225336'&&currentId===sid)return'won';
-    if(currentId===sid)return'current';
-    const ci=order.indexOf(currentId),si=order.indexOf(sid);
-    if(ci===-1)return'future';
-    return si<ci?'done':'future';
-  }
-  function buildSteps(order,names,currentId,timeKeys,props,lostId){
-    return order.map(sid=>{
-      const st=stepStatus(sid,currentId,order,lostId);
-      const ms=timeKeys[sid]?parseFloat(props[timeKeys[sid]]):null;
-      const t=fmtMs(ms);
-      const icon={done:'✓',lost:'✕',won:'★',current:'◉',future:'○'}[st];
-      return`<div class="step ${st}">
-        <div class="step-dot">${icon}</div>
-        <div class="step-name">${names[sid]}</div>
-        <div class="step-time">${t||''}</div>
+        ${detail?`<div class="aristo-detail" id="${eid}">${detail}</div>`:''}
+        ${i<stages.length-1?'<div class="aristo-connector"></div>':''}
       </div>`;
     }).join('');
   }
 
-  const journeyHTML=hasAristo?`
-  <div class="scard">
-    <div class="shead">
-      <div class="sicon" style="background:var(--aristo-bg)">🏆</div>
-      <div class="stitle">Jornada Aristo</div>
-    </div>
-    <div class="pipeline-wrap">
-      <div class="pipe-label">SDR Pipeline</div>
-      <div class="steps">${buildSteps(LEAD_ORDER,LEAD_STAGES,leadStage,LEAD_TIME_KEY,lp,'1269320048')}</div>
-    </div>
-    <div class="pipe-divider">
-      <div class="pipe-div-line"></div>
-      <span style="white-space:nowrap;font-size:10px">→ Closers</span>
-      <div class="pipe-div-line"></div>
-    </div>
-    <div class="pipeline-wrap ${inClosers?'':'closers-inactive'}">
-      <div class="pipe-label">Closers Pipeline</div>
-      <div class="steps">${buildSteps(DEAL_ORDER,DEAL_STAGES,dealStage,DEAL_TIME_KEY,dp,'1269225337')}</div>
-    </div>
-  </div>`:'';
+  const sdrHtml=buildPipelineStages(ARISTO_SDR_STAGES,sdrCurrent,sdrKeys,stageDetail);
+  const closerHtml=buildPipelineStages(ARISTO_CLOSER_STAGES,closerCurrent,closerKeys,stageDetail);
 
-  // ─ COURSES ──────────────────────────────────────
+  return`<div class="section-card">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(247,201,72,.12)">🎓</div>
+      <div class="section-title">Jornada Aristo</div>
+    </div>
+    <div class="aristo-funnel">
+      <div class="aristo-pipeline-label">SDR Pipeline</div>
+      <div class="aristo-stages">${sdrHtml}</div>
+      <div class="aristo-pipeline-divider">
+        <span>↓ Reunião agendada → Closers</span>
+      </div>
+      <div class="aristo-pipeline-label">Closers Pipeline</div>
+      <div class="aristo-stages">${closerHtml}</div>
+    </div>
+  </div>`;
+}
+
+function detailRow(label,value){
+  if(!value&&value!==0)return'';
+  return`<div class="aristo-detail-row"><span class="aristo-detail-label">${label}</span><span class="aristo-detail-value">${value}</span></div>`;
+}
+
+function toggleAristoDetail(id,btn){
+  const el=document.getElementById(id);
+  if(!el)return;
+  const open=el.classList.toggle('open');
+  const icon=document.getElementById('icon_'+id);
+  if(icon)icon.style.transform=open?'rotate(90deg)':'';
+}
+
+// REUNIÕES
+function buildMeetings(meetings){
+  if(!meetings.length)return'';
+  const items=meetings.map(m=>{
+    const mp=m.properties||{};
+    const scheduled=fmtDate(mp.hs_createdate);
+    const meetDate=fmtDate(mp.hs_meeting_start_time||mp.hs_timestamp);
+    const meetTime=mp.hs_meeting_start_time?new Date(mp.hs_meeting_start_time).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'';
+    const outcome=mp.hs_meeting_outcome||'';
+    const outColor=outcome.toLowerCase().includes('complet')||outcome.toLowerCase().includes('realiz')?'var(--success)':outcome.toLowerCase().includes('cancel')||outcome.toLowerCase().includes('no_show')?'var(--danger)':'var(--accent3)';
+    const title=mp.hs_meeting_title||'Reunião';
+    return`<div class="meeting-item">
+      <div class="meeting-icon">📅</div>
+      <div class="meeting-content">
+        <div class="meeting-top">
+          <div class="meeting-title">${title}</div>
+          ${outcome?`<span class="meeting-outcome" style="color:${outColor};border-color:${outColor}33;background:${outColor}11">${outcome}</span>`:''}
+        </div>
+        <div class="meeting-meta">
+          <span>📆 Agendada em ${scheduled}</span>
+          <span>🕐 ${meetDate}${meetTime?' às '+meetTime:''}</span>
+          <span>👤 Mayara</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  return`<div class="section-card">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(124,106,247,.12)">📅</div>
+      <div class="section-title">Reuniões</div>
+      <div class="section-count">${meetings.length}</div>
+    </div>
+    <div class="meetings-list">${items}</div>
+  </div>`;
+}
+
+// COURSES
+function buildCourses(p,leads,activities){
   const courses=[];const seen=new Set();
-  function addC(name,brand,date,src){
-    const k=(name||'').toLowerCase().replace(/\s+/g,'');
-    if(!k||seen.has(k))return;seen.add(k);courses.push({name,brand,date,src});
+  function add(name,brandKey,date,source){
+    const key=name.substring(0,40);if(seen.has(key))return;seen.add(key);
+    courses.push({name,brandKey,date,source});
   }
-  if(p.produtos_primum)addC(p.produtos_primum,detectBrand(p.produtos_primum),p.createdate,'Produto Atual');
-  leads.forEach(l=>{const lp2=l.properties||{};if(lp2.hs_lead_name)addC(lp2.hs_lead_name,detectBrand(lp2.hs_lead_name),lp2.createdate,'Lead');});
-  deals.forEach(d=>{const dp2=d.properties||{};if(dp2.dealname)addC(dp2.dealname,detectBrand(dp2.dealname),dp2.createdate,'Negócio');});
-  if(p.nome_do_ultimo_formulario)addC(p.nome_do_ultimo_formulario,detectBrand(p.nome_do_ultimo_formulario),p.notes_last_updated,'Formulário');
-
-  const tagS={
-    'Produto Atual':'background:rgba(34,197,94,.1);color:#22c55e;border:1px solid rgba(34,197,94,.25)',
-    'Lead':         'background:var(--aristo-bg);color:var(--aristo);border:1px solid var(--aristo-bd)',
-    'Negócio':      'background:var(--blue-bg);color:var(--blue);border:1px solid rgba(56,189,248,.25)',
-    'Formulário':   'background:var(--purple-bg);color:var(--purple);border:1px solid rgba(167,139,250,.25)',
-  };
-  const coursesHTML=`<div class="scard">
-    <div class="shead">
-      <div class="sicon" style="background:var(--purple-bg)">🎓</div>
-      <div class="stitle">Cursos de Interesse</div>
-      ${courses.length?`<div class="scnt">${courses.length}</div>`:''}
-    </div>
-    ${courses.length
-      ?`<div class="courses-grid">${courses.map(c=>{const br=BRANDS[c.brand]||BRANDS.OUTRO;const ts=tagS[c.src]||tagS['Formulário'];return`<div class="course-card" style="border-color:${br.color}22"><div class="cc-bar" style="background:${br.color}"></div><div class="cc-brand" style="color:${br.color}">${br.label}</div><div class="cc-name">${c.name}</div>${c.date?`<div class="cc-date">${fmtDate(c.date)}</div>`:''}<span class="tag" style="${ts}">${c.src}</span></div>`;}).join('')}</div>`
-      :`<div class="empty">Nenhum curso identificado</div>`}
+  if(p.produtos_primum)add(p.produtos_primum,detectBrandKey(p.nome_do_ultimo_formulario||p.produtos_primum),p.lastmodifieddate,'Produto atual');
+  if(p.historico_cursos_interesse)p.historico_cursos_interesse.split(';').forEach(e=>{const t=e.trim();if(t)add(t,detectBrandKey(t),null,'Histórico');});
+  leads.forEach(l=>{const n=l.properties?.hs_lead_name||'';if(n)add(n,detectBrandKey(n),l.properties?.createdate,'Lead');});
+  activities.forEach(a=>{
+    const body=a.properties?.hs_body_preview||a.properties?.hs_note_body||'';
+    if(body.toLowerCase().includes('enviou')&&body.length>20)add(body.substring(0,100),detectBrandKey(body),a.properties?.hs_timestamp,'Formulário');
+  });
+  if(!courses.length)return`<div class="section-card"><div class="section-header"><div class="section-icon" style="background:rgba(124,106,247,.12)">🎓</div><div class="section-title">Cursos de Interesse</div></div><div style="padding:28px;text-align:center;color:var(--muted);font-size:13px">Nenhum curso identificado</div></div>`;
+  return`<div class="section-card">
+    <div class="section-header"><div class="section-icon" style="background:rgba(124,106,247,.12)">🎓</div><div class="section-title">Cursos de Interesse</div><div class="section-count">${courses.length}</div></div>
+    <div class="courses-grid">${courses.map(c=>{
+      const br=BRANDS[c.brandKey]||BRANDS.OUTRO;
+      return`<div class="course-card" style="border-color:${br.color}22">
+        <div class="course-top-bar" style="background:${br.color};opacity:.5"></div>
+        <div class="course-brand" style="color:${br.color}">${br.label}</div>
+        <div class="course-name">${c.name}</div>
+        ${c.date?`<div class="course-date">${fmtDate(c.date)}</div>`:''}
+        <span class="tl-tag" style="background:${br.bg};color:${br.color}">${c.source}</span>
+      </div>`;
+    }).join('')}</div>
   </div>`;
+}
 
-  // ─ MEETINGS ─────────────────────────────────────
-  const sortedM=[...meetings].sort((a,b)=>new Date(b.properties?.hs_timestamp||0)-new Date(a.properties?.hs_timestamp||0));
-  const ocMap={
-    COMPLETED:  {lbl:'Realizada',  c:'#22c55e',bg:'rgba(34,197,94,.1)' },
-    NO_SHOW:    {lbl:'No-show',    c:'#ef4444',bg:'rgba(239,68,68,.1)' },
-    CANCELED:   {lbl:'Cancelada',  c:'#f5a623',bg:'rgba(245,166,35,.1)'},
-    RESCHEDULED:{lbl:'Reagendada', c:'#38bdf8',bg:'rgba(56,189,248,.1)'},
-  };
-  const meetingsHTML=`<div class="scard">
-    <div class="shead">
-      <div class="sicon" style="background:var(--blue-bg)">📅</div>
-      <div class="stitle">Reuniões</div>
-      ${sortedM.length?`<div class="scnt">${sortedM.length}</div>`:''}
-    </div>
-    ${sortedM.length
-      ?`<div class="meetings-list">${sortedM.map(m=>{const mp=m.properties||{};const oc=ocMap[mp.hs_meeting_outcome]||null;const mDate=mp.hs_timestamp||mp.hs_meeting_start_time;return`<div class="meeting-row"><div class="mi-icon">📌</div><div class="mi-body"><div class="mi-top"><div class="mi-title">${mp.hs_meeting_title||'Reunião sem título'}</div>${oc?`<span class="mi-outcome" style="color:${oc.c};background:${oc.bg};border-color:${oc.c}44">${oc.lbl}</span>`:''}</div><div class="mi-meta">${mDate?`<span>📅 ${fmtDate(mDate)} ${fmtTime(mDate)}</span>`:''}<span>🗓 Agendada: ${fmtDate(mp.hs_createdate)}</span><span>👤 Mayara</span></div></div></div>`;}).join('')}</div>`
-      :`<div class="empty">Nenhuma reunião encontrada</div>`}
+// TIMELINE com campos expandíveis
+let expandCount=0;
+function buildTimeline(activities){
+  if(!activities.length)return'';
+  expandCount=0;
+  const items=activities.slice(0,30).map(a=>{
+    const ap=a.properties||{};
+    const body=ap.hs_body_preview||ap.hs_note_body||ap.hs_email_subject||'';
+    const title=ap.hs_title||body.substring(0,80)||'Atividade';
+    const isForm=body.toLowerCase().includes('enviou');
+    const brand=isForm?getBrand(body):null;
+    const dotColor=brand?brand.color:'var(--muted)';
+
+    // Extrai campos do corpo da atividade
+    let fieldsHtml='';
+    if(isForm&&body.length>20){
+      const fields=extractFormFields(body);
+      if(fields.length){
+        const id=`expand_${expandCount++}`;
+        const gridItems=fields.map(f=>`<div class="ff-item"><div class="ff-label">${f.label}</div><div class="ff-value">${f.value}</div></div>`).join('');
+        fieldsHtml=`
+          <button class="expand-btn" onclick="toggleExpand('${id}',this)">▸ Ver campos preenchidos</button>
+          <div class="form-expand" id="${id}"><div class="form-fields">${gridItems}</div></div>`;
+      }
+    }
+
+    return`<div class="timeline-item">
+      <div class="tl-row">
+        <div class="tl-line">
+          <div class="tl-dot" style="background:${dotColor};box-shadow:0 0 5px ${dotColor}66"></div>
+          <div class="tl-connector"></div>
+        </div>
+        <div>
+          <div class="tl-top"><div class="tl-title">${title}</div><div class="tl-date">${fmtDateShort(ap.hs_timestamp)}</div></div>
+          ${body&&body!==title?`<div class="tl-sub">${body.substring(0,160)}${body.length>160?'...':''}</div>`:''}
+          ${brand?`<span class="tl-tag" style="background:${brand.bg};color:${brand.color}">${brand.label}</span>`:''}
+          ${fieldsHtml}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  return`<div class="section-card">
+    <div class="section-header"><div class="section-icon" style="background:rgba(78,205,196,.12)">⚡</div><div class="section-title">Timeline de Atividades</div><div class="section-count">${Math.min(activities.length,30)}</div></div>
+    <div class="timeline">${items}</div>
   </div>`;
+}
 
-  // ─ TIMELINE ─────────────────────────────────────
-  const tlItems=notes.filter(n=>(n.properties?.hs_note_body||n.properties?.hs_body_preview||'').trim().length>10).slice(0,20);
-  const timelineHTML=tlItems.length?`<div class="scard">
-    <div class="shead">
-      <div class="sicon" style="background:rgba(107,114,128,.1)">⏱</div>
-      <div class="stitle">Atividades Recentes</div>
-      <div class="scnt">${tlItems.length}</div>
-    </div>
-    <div class="timeline-wrap">
-      ${tlItems.map((n,i)=>{const np=n.properties||{};const body=np.hs_note_body||np.hs_body_preview||'';const br=BRANDS[detectBrand(body)]||BRANDS.OUTRO;const isForm=body.toLowerCase().includes('enviou')||body.toLowerCase().includes('preencheu');return`<div class="tl-item">${i<tlItems.length-1?'<div class="tl-line"></div>':''}<div class="tl-dot">${isForm?'📝':'💬'}</div><div class="tl-body"><div class="tl-title">${body.substring(0,90)}${body.length>90?'…':''}</div><div class="tl-date">${fmtDate(np.hs_timestamp)}</div><span class="tag" style="background:${br.bg};color:${br.color};border:1px solid ${br.color}30;margin-top:4px">${isForm?'Formulário':'Nota'}</span></div></div>`;}).join('')}
-    </div>
-  </div>`:'';
+function toggleExpand(id,btn){
+  const el=document.getElementById(id);
+  const open=el.classList.toggle('open');
+  btn.textContent=open?'▾ Ocultar campos':'▸ Ver campos preenchidos';
+}
 
-  // ─ ASSEMBLE ─────────────────────────────────────
-  document.getElementById('content').innerHTML=`
-  <div class="layout">
-    ${leftHTML}
-    <div class="right-col">
-      ${journeyHTML}
-      ${coursesHTML}
-      ${meetingsHTML}
-      ${timelineHTML}
-    </div>
+function extractFormFields(body){
+  const fields=[];
+  // Tenta extrair pares "Label: Valor" do corpo da atividade
+  const lines=body.split(/[\n\r]+/);
+  lines.forEach(line=>{
+    const match=line.match(/^([^:]{2,40}):\s*(.+)$/);
+    if(match&&match[1]&&match[2]){
+      fields.push({label:match[1].trim(),value:match[2].trim()});
+    }
+  });
+  // Se não achou campos estruturados, tenta extrair info do próprio texto
+  if(!fields.length){
+    const nameMatch=body.match(/^([A-Za-zÀ-ÿ\s]+)\s+enviou/);
+    if(nameMatch)fields.push({label:'Nome',value:nameMatch[1].trim()});
+    const formMatch=body.match(/enviou\s+(.+?)\s+em\s+/);
+    if(formMatch)fields.push({label:'Formulário',value:formMatch[1].trim()});
+    const pageMatch=body.match(/em\s+(.+)$/);
+    if(pageMatch)fields.push({label:'Página',value:pageMatch[1].trim()});
+  }
+  return fields.slice(0,8);
+}
+
+// DEALS
+function buildDeals(deals){
+  const items=deals.map(d=>{
+    const dp=d.properties||{};const br=getBrand(dp.dealname||'');
+    return`<div class="timeline-item"><div class="tl-row">
+      <div class="tl-line"><div class="tl-dot" style="background:${br.color}"></div><div class="tl-connector"></div></div>
+      <div>
+        <div class="tl-top"><div class="tl-title">${fmt(dp.dealname)}</div><div class="tl-date">${fmtDateShort(dp.createdate)}</div></div>
+        <div class="tl-sub">Pipeline: ${fmt(dp.pipeline)} · Stage: ${fmt(dp.dealstage)}</div>
+        ${dp.amount?`<div class="tl-sub">R$ ${parseFloat(dp.amount).toLocaleString('pt-BR')}</div>`:''}
+      </div>
+    </div></div>`;
+  }).join('');
+  return`<div class="section-card">
+    <div class="section-header"><div class="section-icon" style="background:rgba(247,201,72,.12)">💼</div><div class="section-title">Negócios</div><div class="section-count">${deals.length}</div></div>
+    <div class="timeline">${items}</div>
   </div>`;
+}
+
+// ZENVIA
+function buildZenvia(deals){
+  // Coleta todas as conversas dos negócios que tenham a propriedade
+  const convs=deals.filter(d=>d.properties?.zenvia___registro_de_conversa)
+    .map(d=>({name:d.properties.dealname||'Negócio',text:d.properties.zenvia___registro_de_conversa,brand:getBrand(d.properties.dealname||'')}));
+  if(!convs.length)return'';
+
+  const tabs=convs.map((c,i)=>`<button class="zv-tab${i===0?' active':''}" onclick="zvSwitch(${i},this)">${c.brand.label} — ${c.name.substring(0,30)}${c.name.length>30?'...':''}</button>`).join('');
+  const panels=convs.map((c,i)=>{
+    // Tenta parsear mensagens linha a linha
+    const lines=c.text.split(/\n/).filter(l=>l.trim().length>1);
+    const msgs=lines.map(line=>{
+      // Detecta padrão: [HH:MM] Nome: mensagem  ou  Nome: mensagem
+      const timeMatch=line.match(/^\[?(\d{1,2}:\d{2}(?::\d{2})?)\]?\s*(.+?):\s*(.+)$/);
+      if(timeMatch){
+        const isAgent=timeMatch[2].toLowerCase().includes('vendedor')||timeMatch[2].toLowerCase().includes('agent')||timeMatch[2].toLowerCase().includes('atendente');
+        return`<div class="zv-msg ${isAgent?'agent':'contact'}">
+          <div class="zv-sender">${timeMatch[2]} <span class="zv-time">${timeMatch[1]}</span></div>
+          <div class="zv-bubble">${timeMatch[3]}</div>
+        </div>`;
+      }
+      // Linha simples
+      return`<div class="zv-msg contact"><div class="zv-bubble">${line}</div></div>`;
+    }).join('');
+    return`<div class="zv-panel${i===0?'':' hidden'}" id="zvpanel_${i}">
+      <div class="zv-chat">${msgs||`<div style="padding:16px;color:var(--muted);font-size:12px;white-space:pre-wrap">${c.text}</div>`}</div>
+    </div>`;
+  }).join('');
+
+  return`<div class="section-card">
+    <div class="section-header"><div class="section-icon" style="background:rgba(78,205,196,.12)">💬</div><div class="section-title">Conversa Zenvia</div><div class="section-count">${convs.length}</div></div>
+    ${convs.length>1?`<div class="zv-tabs">${tabs}</div>`:''}
+    ${panels}
+  </div>`;
+}
+
+function zvSwitch(idx,btn){
+  document.querySelectorAll('.zv-panel').forEach((p,i)=>p.classList.toggle('hidden',i!==idx));
+  document.querySelectorAll('.zv-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ENGAGEMENT
+function buildEngagement(p){
+  const v=parseInt(p.hs_analytics_num_visits||0),pv=parseInt(p.hs_analytics_num_page_views||0),eo=parseInt(p.hs_email_open||0),ec=parseInt(p.hs_email_click||0);
+  const rows=[
+    {label:'Sessões no site',val:v,max:Math.max(v,30),color:'var(--accent)'},
+    {label:'Pageviews',val:pv,max:Math.max(pv,60),color:'var(--accent2)'},
+    {label:'Emails abertos',val:eo,max:Math.max(eo,ec,10),color:'var(--accent3)'},
+    {label:'Emails clicados',val:ec,max:Math.max(eo,ec,10),color:'var(--success)'},
+  ].map(r=>`<div class="eng-row"><span class="eng-label">${r.label}</span><div class="eng-bar-wrap"><div class="eng-bar" style="width:${r.max?(r.val/r.max*100):0}%;background:${r.color}"></div></div><span class="eng-value">${r.val}</span></div>`).join('');
+  return`<div class="section-card">
+    <div class="section-header"><div class="section-icon" style="background:rgba(92,240,160,.12)">📊</div><div class="section-title">Engajamento</div></div>
+    <div class="engagement-wrap">${rows}</div>
+  </div>`;
+}
+
+function showLoading(){
+  document.getElementById('leftCol').innerHTML=`<div class="section-card"><div class="loading"><div class="spinner"></div><div>Carregando...</div></div></div>`;
+  document.getElementById('rightCol').innerHTML=`<div class="section-card"><div class="loading"><div class="spinner pulse"></div><div>Buscando atividades...</div></div></div>`;
+}
+function showEmpty(){
+  document.getElementById('leftCol').innerHTML='';
+  document.getElementById('rightCol').innerHTML=`<div class="section-card"><div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Buscar um lead</div><div class="empty-sub">Digite o ID ou email do contato na barra acima</div></div></div>`;
 }
 </script>
 </body>
