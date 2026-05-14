@@ -199,6 +199,34 @@
   .aristo-detail-label{font-size:11px;color:var(--muted);flex-shrink:0;}
   .aristo-detail-value{font-size:12px;font-weight:500;text-align:right;word-break:break-word;}
 
+  /* STAGE HERO — indicador de etapa atual no card esquerdo */
+  .stage-hero{margin:12px 20px;border-radius:10px;overflow:hidden;border:1.5px solid rgba(247,201,72,.3);background:rgba(247,201,72,.07);}
+  .stage-hero.lost{border-color:rgba(247,106,106,.35);background:rgba(247,106,106,.07);}
+  .stage-hero.won{border-color:rgba(92,240,160,.35);background:rgba(92,240,160,.07);}
+  .sh-top{padding:7px 12px 2px;display:flex;align-items:center;gap:6px;}
+  .sh-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:var(--accent3);box-shadow:0 0 6px var(--accent3);animation:shglow 2s infinite;}
+  .stage-hero.lost .sh-dot{background:var(--danger);box-shadow:0 0 6px var(--danger);animation:none;}
+  .stage-hero.won  .sh-dot{background:var(--success);box-shadow:0 0 6px var(--success);animation:none;}
+  @keyframes shglow{0%,100%{box-shadow:0 0 4px var(--accent3)}50%{box-shadow:0 0 12px var(--accent3),0 0 22px rgba(247,201,72,.2)}}
+  .sh-pipe{font-size:9px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--accent3);opacity:.75;}
+  .stage-hero.lost .sh-pipe{color:var(--danger);}
+  .stage-hero.won  .sh-pipe{color:var(--success);}
+  .sh-body{padding:1px 12px 10px;}
+  .sh-name{font-size:16px;font-weight:600;color:var(--accent3);line-height:1.25;margin-bottom:2px;font-family:'DM Serif Display',serif;}
+  .stage-hero.lost .sh-name{color:var(--danger);}
+  .stage-hero.won  .sh-name{color:var(--success);}
+  .sh-time{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px;}
+  .sh-time::before{content:'⏱';font-size:10px;}
+
+  /* current dot inside pipeline stages */
+  .aristo-current-dot{width:7px;height:7px;border-radius:50%;background:var(--success);box-shadow:0 0 6px var(--success);animation:shglow2 2s infinite;flex-shrink:0;}
+  @keyframes shglow2{0%,100%{box-shadow:0 0 4px var(--success)}50%{box-shadow:0 0 10px var(--success),0 0 20px rgba(92,240,160,.2)}}
+
+  /* time badge inside pipeline stage */
+  .aristo-stage-time-badge{font-size:9px;color:var(--muted);margin-left:auto;font-family:'DM Mono',monospace;flex-shrink:0;}
+  .aristo-stage.done   .aristo-stage-time-badge{color:rgba(124,106,247,.7);}
+  .aristo-stage.current .aristo-stage-time-badge{color:rgba(247,201,72,.8);}
+
   /* MEETINGS */
   .meetings-list{padding:8px 0;}
   .meeting-item{display:flex;gap:12px;padding:12px 20px;transition:background .15s;border-bottom:1px solid var(--border);}
@@ -500,6 +528,34 @@ function render(contact,activities,leads,deals,meetings){
           <div class="score-sub">próximos 90 dias</div>
         </div>
       </div>
+      ${(()=>{
+        if(!isAristo)return'';
+        // determine current pipeline & stage
+        const sdrStageId=_sdrL?.properties?.hs_pipeline_stage||null;
+        const dealStageId=_closerD?.properties?.dealstage||null;
+        const inClosers=!!_closerD&&!!dealStageId;
+        const ARISTO_SDR_MAP={'1087683153':'Prospecção','1087683154':'Abordagem','1087683156':'Qualificação','1269135952':'Reunião Agendada','1269320048':'Perdido'};
+        const ARISTO_DL_MAP={'1269123352':'Sessão Estratégica','1269123353':'Pós-Sessão','1269225336':'Venda/Matrícula','1269225337':'Perdido'};
+        const stageName=inClosers?(ARISTO_DL_MAP[dealStageId]||dealStageId):(ARISTO_SDR_MAP[sdrStageId]||sdrStageId||'—');
+        const pipeLabel=inClosers?'Closers Pipeline':'SDR Pipeline';
+        const isLost=stageName==='Perdido';
+        const isWon=stageName==='Venda/Matrícula';
+        const heroClass=isLost?'lost':isWon?'won':'';
+        // time in current stage
+        const LEAD_TKEY={'1087683153':'hs_v2_cumulative_time_in_1087683153','1087683154':'hs_v2_cumulative_time_in_1087683154','1087683156':'hs_v2_cumulative_time_in_1087683156'};
+        const DEAL_TKEY={'1269123352':'hs_v2_cumulative_time_in_1269123352','1269123353':'hs_v2_cumulative_time_in_1269123353'};
+        const tProp=inClosers?DEAL_TKEY[dealStageId]:LEAD_TKEY[sdrStageId];
+        const tProps=inClosers?dp_side:lp_side;
+        const tMs=tProp?parseInt(tProps[tProp]||0):0;
+        const tStr=tMs>0?msToReadable(tMs):null;
+        return`<div class="stage-hero ${heroClass}">
+          <div class="sh-top"><div class="sh-dot"></div><div class="sh-pipe">${pipeLabel}</div></div>
+          <div class="sh-body">
+            <div class="sh-name">${stageName}</div>
+            ${tStr?`<div class="sh-time">${tStr} nesta etapa</div>`:'<div class="sh-time">Tempo não disponível</div>'}
+          </div>
+        </div>`;
+      })()}
       ${rotulosHtml?`<div class="rotulo-section"><div class="rotulo-title">Rótulo por marca</div><div class="rotulo-list">${rotulosHtml}</div></div>`:''}
       <div class="props-list">
         ${propRow('Telefone',p.mobilephone||p.phone)}
@@ -709,16 +765,19 @@ function buildAristoFunnel(leads,deals){
     return'';
   }
 
-  function buildPipelineStages(stages,currentKey,allKeys,detailFn){
+  function buildPipelineStages(stages,currentKey,allKeys,detailFn,props){
     return stages.map((s,i)=>{
       const cls=stageClass(s.key,currentKey,allKeys);
       const detail=detailFn(s.key);
       const eid=`aristo_${s.key}`;
+      const tMs=s.timeKey&&props?parseInt(props[s.timeKey]||0):0;
+      const tStr=(tMs>0)?msToReadable(tMs):null;
       return`<div class="aristo-stage ${cls}" onclick="toggleAristoDetail('${eid}')">
         <div class="aristo-stage-top">
           <span class="aristo-stage-icon">${s.icon}</span>
           <span class="aristo-stage-label">${s.label}</span>
           ${cls==='current'?'<span class="aristo-current-dot"></span>':''}
+          ${tStr?`<span class="aristo-stage-time-badge">${tStr}</span>`:''}
           ${detail?'<span class="aristo-expand-hint">›</span>':''}
         </div>
         ${detail?`<div class="aristo-detail" id="${eid}">${detail}</div>`:''}
@@ -727,8 +786,8 @@ function buildAristoFunnel(leads,deals){
     }).join('');
   }
 
-  const sdrHtml=buildPipelineStages(ARISTO_SDR_STAGES,sdrCurrent,sdrKeys,stageDetail);
-  const closerHtml=buildPipelineStages(ARISTO_CLOSER_STAGES,closerCurrent,closerKeys,stageDetail);
+  const sdrHtml=buildPipelineStages(ARISTO_SDR_STAGES,sdrCurrent,sdrKeys,stageDetail,lp);
+  const closerHtml=buildPipelineStages(ARISTO_CLOSER_STAGES,closerCurrent,closerKeys,stageDetail,dp);
 
   return`<div class="section-card">
     <div class="section-header">
